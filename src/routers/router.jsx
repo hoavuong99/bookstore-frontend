@@ -14,6 +14,8 @@ import ManageBooks from "../pages/dashboard/manageBooks/ManageBooks";
 import UserDashboard from "../pages/dashboard/users/UserDashboard";
 import Home from "../pages/home/Home";
 import ManageCategories from "../pages/dashboard/categories/ManageCategories";
+import ManageOrders from "../pages/dashboard/orders/ManageOrders";
+import ManageUsers from "../pages/dashboard/users/ManageUsers";
 
 const router = createBrowserRouter([
     {
@@ -83,6 +85,18 @@ const router = createBrowserRouter([
           path: "categories",
           element: <AdminRoute>
             <ManageCategories/>
+          </AdminRoute>
+        },
+        {
+          path: "orders",
+          element: <AdminRoute>
+            <ManageOrders/>
+          </AdminRoute>
+        },
+        {
+          path: "users",
+          element: <AdminRoute>
+            <ManageUsers/>
           </AdminRoute>
         }
       ]

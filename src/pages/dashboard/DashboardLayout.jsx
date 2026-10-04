@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { MdBook, MdCategory } from "react-icons/md";
+import { MdBook, MdCategory, MdPeople, MdReceiptLong } from "react-icons/md";
 import { useAuth } from "../../context/AuthContext";
 
 const DashboardLayout = () => {
@@ -9,11 +9,17 @@ const DashboardLayout = () => {
   const isDashboardActive = location.pathname === "/dashboard";
   const isBooksActive = location.pathname === "/dashboard/manage-books";
   const isCategoriesActive = location.pathname === "/dashboard/categories";
+  const isOrdersActive = location.pathname === "/dashboard/orders";
+  const isUsersActive = location.pathname === "/dashboard/users";
   const pageTitle =
     location.pathname === "/dashboard/manage-books"
       ? "Books"
       : location.pathname === "/dashboard/categories"
         ? "Categories"
+        : location.pathname === "/dashboard/orders"
+          ? "Orders"
+          : location.pathname === "/dashboard/users"
+            ? "Users"
         : "Dashboard";
   const userName =
     currentUser?.fullName || currentUser?.displayName || currentUser?.email;
@@ -88,6 +94,30 @@ const DashboardLayout = () => {
               <span className="sr-only">Manage Categories</span>
               <MdCategory className="h-6 w-6" />
               <span>Categories</span>
+            </Link>
+            <Link
+              to="/dashboard/orders"
+              className={`inline-flex items-center gap-3 rounded-lg px-4 py-3 ${
+                isOrdersActive
+                  ? "bg-white text-purple-600"
+                  : "hover:bg-gray-700 hover:text-gray-400 focus:bg-gray-700 focus:text-gray-400"
+              }`}
+            >
+              <span className="sr-only">Orders</span>
+              <MdReceiptLong className="h-6 w-6" />
+              <span>Orders</span>
+            </Link>
+            <Link
+              to="/dashboard/users"
+              className={`inline-flex items-center gap-3 rounded-lg px-4 py-3 ${
+                isUsersActive
+                  ? "bg-white text-purple-600"
+                  : "hover:bg-gray-700 hover:text-gray-400 focus:bg-gray-700 focus:text-gray-400"
+              }`}
+            >
+              <span className="sr-only">Users</span>
+              <MdPeople className="h-6 w-6" />
+              <span>Users</span>
             </Link>
           </nav>
           <div className="inline-flex h-20 items-center border-t border-gray-700 px-4">

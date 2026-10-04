@@ -32,10 +32,31 @@ const ordersApi = createApi({
                 return Array.isArray(data) ? data : data?.content || [];
             },
             providesTags: ['Orders']
+        }),
+        getAllOrders: builder.query({
+            query: () => "/admin/all?page=0&size=100",
+            transformResponse: (response) => {
+                const data = response?.data || response;
+                return Array.isArray(data) ? data : data?.content || [];
+            },
+            providesTags: ["Orders"],
+        }),
+        updateOrderStatus: builder.mutation({
+            query: ({ orderId, status }) => ({
+                url: `/admin/${orderId}/status`,
+                method: "PATCH",
+                body: { status },
+            }),
+            invalidatesTags: ["Orders"],
         })
     })
 })
 
-export const {useCreateOrderMutation, useGetOrderByEmailQuery} = ordersApi;
+export const {
+    useCreateOrderMutation,
+    useGetOrderByEmailQuery,
+    useGetAllOrdersQuery,
+    useUpdateOrderStatusMutation,
+} = ordersApi;
 
 export default ordersApi;

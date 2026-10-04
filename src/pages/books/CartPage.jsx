@@ -1,15 +1,15 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { getImgUrl } from "../../utils/getImgUrl";
 import {
   useGetCartQuery,
+  useClearCartMutation,
   useRemoveFromCartMutation,
 } from "../../redux/features/books/booksApi";
 
 const CartPage = () => {
   const { data: cart, isLoading, isError, error } = useGetCartQuery();
   const [removeFromCart, { isLoading: isRemoving }] = useRemoveFromCartMutation();
-  const [isClearing, setIsClearing] = useState(false);
+  const [clearCart, { isLoading: isClearing }] = useClearCartMutation();
   const cartItems = cart?.items || [];
   const totalPrice = Number(cart?.subtotal || 0).toFixed(2);
 
@@ -18,13 +18,10 @@ const CartPage = () => {
   };
 
   const handleClearCart = async () => {
-    setIsClearing(true);
     try {
-      await Promise.all(
-        cartItems.map((item) => removeFromCart(item.itemId).unwrap())
-      );
-    } finally {
-      setIsClearing(false);
+      await clearCart().unwrap();
+    } catch (error) {
+      console.error("Unable to clear cart", error);
     }
   };
 

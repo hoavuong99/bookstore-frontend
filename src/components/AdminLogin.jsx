@@ -18,7 +18,6 @@ const AdminLogin = () => {
       const navigate = useNavigate()
 
       const onSubmit = async (data) => {
-        // console.log(data)
         try {
            const response =  await axios.post(`${getBaseUrl()}/api/auth/admin`, data, {
                 headers: {
@@ -26,7 +25,6 @@ const AdminLogin = () => {
                 }
            })
            const auth = response.data;
-        //    console.log(auth)
             if(auth.token) {
                 localStorage.setItem('token', auth.token);
                 setTimeout(() => {
@@ -72,8 +70,6 @@ const AdminLogin = () => {
                     <button className='bg-blue-500 w-full hover:bg-blue-700 text-white font-bold py-2 px-8 rounded focus:outline-none'>Login </button>
                 </div>
             </form>
-
-            <p className='mt-5 text-center text-gray-500 text-xs'>©2025 Book Store. All rights reserved.</p>
         </div>
     </div>
   )

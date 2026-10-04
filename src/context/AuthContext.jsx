@@ -107,6 +107,14 @@ export const AuthProvide = ({ children }) => {
     setCurrentUser(null);
   };
 
+  const updateCurrentUser = (user) => {
+    setCurrentUser((previousUser) => {
+      const updatedUser = { ...previousUser, ...user };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      return updatedUser;
+    });
+  };
+
   const value = useMemo(
     () => ({
       currentUser,
@@ -115,6 +123,7 @@ export const AuthProvide = ({ children }) => {
       loginUser,
       signInWithGoogle,
       logout,
+      updateCurrentUser,
     }),
     [currentUser, loading]
   );

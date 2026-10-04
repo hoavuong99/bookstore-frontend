@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { Link,  useNavigate } from 'react-router-dom'
 import { useForm } from "react-hook-form"
 import { useAuth } from '../context/AuthContext';
+import { showErrorToast, showSuccessToast } from '../utils/toast';
 
 const Register = () => {
     const [message, setMessage] = useState("");
@@ -28,10 +29,12 @@ const Register = () => {
                 phone: data.phone,
                 address: data.address,
             });
-            alert("User registered successfully!")
+            showSuccessToast("User registered successfully.");
             navigate("/")
         } catch (error) {
-           setMessage(error?.response?.data?.message || "Please provide valid information") 
+           const errorMessage = error?.response?.data?.message || "Please provide valid information";
+           setMessage(errorMessage);
+           showErrorToast(errorMessage);
            console.error(error)
         }
       }
@@ -89,8 +92,6 @@ const Register = () => {
             </div>
         </form>
         <p className='align-baseline font-medium mt-4 text-sm'>Have an account? Please <Link to="/login" className='text-blue-500 hover:text-blue-700'>Login</Link></p>
-
-        <p className='mt-5 text-center text-gray-500 text-xs'>©2025 Book Store. All rights reserved.</p>
     </div>
 </div>
   )

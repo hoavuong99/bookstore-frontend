@@ -124,6 +124,14 @@ const booksApi = createApi({
             }),
             transformResponse: (response) => unwrapApiResponse(response),
             invalidatesTags: ["Cart"],
+        }),
+        clearCart: builder.mutation({
+            query: () => ({
+                url: "/cart/items",
+                method: "DELETE",
+            }),
+            transformResponse: (response) => unwrapApiResponse(response),
+            invalidatesTags: ["Cart"],
         })
     })
 })
@@ -141,5 +149,6 @@ export const {
     useGetCartQuery,
     useAddToCartMutation,
     useRemoveFromCartMutation,
+    useClearCartMutation,
 } = booksApi;
 export default booksApi;
