@@ -9,27 +9,25 @@ import { HiOutlineUser } from "react-icons/hi";
 
 import avatarImg from "../assets/avatar.png";
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import { useAuth } from "../context/AuthContext";
+import { useGetCartQuery } from "../redux/features/books/booksApi";
 
 const navigation = [
   { name: "Dashboard", href: "/user-dashboard" },
   { name: "Orders", href: "/orders" },
-  { name: "Cart Page", href: "/cart" },
+  { name: "Cart", href: "/cart" },
   { name: "Check Out", href: "/checkout" },
 ];
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const cartItems = useSelector((state) => state.cart.cartItems);
-
   const { currentUser, logout } = useAuth();
+  const { data: cart } = useGetCartQuery(undefined, { skip: !currentUser });
+  const cartItemCount = cart?.totalItems || 0;
 
   const handleLogOut = () => {
     logout();
   };
-
-  const token = localStorage.getItem("token");
 
   return (
     <header className="max-w-screen-2xl mx-auto px-4 py-6">
@@ -95,10 +93,6 @@ const Navbar = () => {
                   </div>
                 )}
               </>
-            ) : token ? (
-              <Link to="/dashboard" className="border-b-2 border-primary">
-                Dashboard
-              </Link>
             ) : (
               <Link to="/login">
                 {" "}
@@ -116,9 +110,9 @@ const Navbar = () => {
             className="bg-primary p-1 sm:px-6 px-2 flex items-center rounded-sm"
           >
             <HiOutlineShoppingCart className="" />
-            {cartItems.length > 0 ? (
+            {cartItemCount > 0 ? (
               <span className="text-sm font-semibold sm:ml-1">
-                {cartItems.length}
+                {cartItemCount}
               </span>
             ) : (
               <span className="text-sm font-semibold sm:ml-1">0</span>

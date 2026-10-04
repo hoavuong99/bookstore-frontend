@@ -17,9 +17,8 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      await loginUser(data.email, data.password);
-      alert("Login successful!");
-      navigate("/");
+      const user = await loginUser(data.email, data.password);
+      navigate(user.role === "ROLE_ADMIN" ? "/dashboard" : "/");
     } catch (error) {
       setMessage(error?.response?.data?.message || "Please provide a valid email and password");
       console.error(error);

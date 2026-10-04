@@ -19,7 +19,9 @@ const normalizeBook = (book) => ({
     oldPrice: Number(book?.price || 0),
     coverImage: book?.imageUrl || '',
     description: book?.description || `ISBN: ${book?.isbn || ''}`,
-    category: book?.category || '',
+    categoryIds: Array.isArray(book?.categoryIds) ? book.categoryIds : [],
+    categoryNames: Array.isArray(book?.categoryNames) ? book.categoryNames : [],
+    category: Array.isArray(book?.categoryNames) ? book.categoryNames.join(', ') : '',
 });
 
 const unwrapApiResponse = (response) => {
@@ -32,8 +34,36 @@ const unwrapApiResponse = (response) => {
 const booksApi = createApi({
     reducerPath: 'booksApi',
     baseQuery,
-    tagTypes: ['Books'],
+    tagTypes: ['Books', 'Categories', 'Cart'],
     endpoints: (builder) =>({
+        fetchAllCategories: builder.query({
+            query: () => "/categories",
+            transformResponse: unwrapApiResponse,
+            providesTags: ["Categories"],
+        }),
+        createCategory: builder.mutation({
+            query: (category) => ({
+                url: "/categories",
+                method: "POST",
+                body: category,
+            }),
+            invalidatesTags: ["Categories"],
+        }),
+        updateCategory: builder.mutation({
+            query: ({ id, ...category }) => ({
+                url: `/categories/${id}`,
+                method: "PUT",
+                body: category,
+            }),
+            invalidatesTags: ["Books", "Categories"],
+        }),
+        deleteCategory: builder.mutation({
+            query: (id) => ({
+                url: `/categories/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["Books", "Categories"],
+        }),
         fetchAllBooks: builder.query({
             query: () => "/books",
             transformResponse: (response) => {
@@ -72,9 +102,44 @@ const booksApi = createApi({
                 method: "DELETE"
             }),
             invalidatesTags: ["Books"]
+        }),
+        getCart: builder.query({
+            query: () => "/cart",
+            transformResponse: (response) => unwrapApiResponse(response),
+            providesTags: ["Cart"],
+        }),
+        addToCart: builder.mutation({
+            query: ({ bookId, quantity = 1 }) => ({
+                url: "/cart/items",
+                method: "POST",
+                body: { bookId, quantity },
+            }),
+            transformResponse: (response) => unwrapApiResponse(response),
+            invalidatesTags: ["Cart"],
+        }),
+        removeFromCart: builder.mutation({
+            query: (itemId) => ({
+                url: `/cart/items/${itemId}`,
+                method: "DELETE",
+            }),
+            transformResponse: (response) => unwrapApiResponse(response),
+            invalidatesTags: ["Cart"],
         })
     })
 })
 
-export const {useFetchAllBooksQuery, useFetchBookByIdQuery, useAddBookMutation, useUpdateBookMutation, useDeleteBookMutation} = booksApi;
+export const {
+    useFetchAllCategoriesQuery,
+    useCreateCategoryMutation,
+    useUpdateCategoryMutation,
+    useDeleteCategoryMutation,
+    useFetchAllBooksQuery,
+    useFetchBookByIdQuery,
+    useAddBookMutation,
+    useUpdateBookMutation,
+    useDeleteBookMutation,
+    useGetCartQuery,
+    useAddToCartMutation,
+    useRemoveFromCartMutation,
+} = booksApi;
 export default booksApi;

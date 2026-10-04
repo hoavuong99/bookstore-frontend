@@ -2,18 +2,44 @@ import { FiShoppingCart } from "react-icons/fi";
 import { useParams } from "react-router-dom";
 
 import { getImgUrl } from "../../utils/getImgUrl";
-import { useDispatch } from "react-redux";
-import { addToCart } from "../../redux/features/cart/cartSlice";
-import { useFetchBookByIdQuery } from "../../redux/features/books/booksApi";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import {
+  useAddToCartMutation,
+  useFetchBookByIdQuery,
+} from "../../redux/features/books/booksApi";
+import Swal from "sweetalert2";
 
 const SingleBook = () => {
   const { id } = useParams();
   const { data: book, isLoading, isError } = useFetchBookByIdQuery(id);
 
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  const [addToCart, { isLoading: isAdding }] = useAddToCartMutation();
 
-  const handleAddToCart = (product) => {
-    dispatch(addToCart(product));
+  const handleAddToCart = async (product) => {
+    if (!currentUser) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      await addToCart({ bookId: product.id || product._id, quantity: 1 }).unwrap();
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "Product added to the cart",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Unable to add product",
+        text: error?.data?.message || "Please try again.",
+      });
+    }
   };
 
   if (isLoading)
@@ -64,6 +90,7 @@ const SingleBook = () => {
       <div className="flex justify-center mt-6 md:justify-end">
         <button
           onClick={() => handleAddToCart(book)}
+          disabled={isAdding}
           className="btn-primary px-6 py-3 hover:text-white bg-blue-600 hover:bg-blue-700 rounded-md flex items-center gap-2 shadow-lg transition duration-200"
         >
           <FiShoppingCart className="text-lg" />

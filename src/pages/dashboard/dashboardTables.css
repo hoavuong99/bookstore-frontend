@@ -1,0 +1,53 @@
+.dashboard-table-section {
+  width: 100%;
+  max-width: 1600px;
+  margin-inline: auto;
+}
+
+.dashboard-table-wrapper {
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  background-color: white;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.dashboard-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.dashboard-table thead {
+  background-color: rgb(249 250 251);
+  color: rgb(107 114 128);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  text-transform: uppercase;
+}
+
+.dashboard-table th {
+  padding: 1rem 2rem;
+  white-space: nowrap;
+}
+
+.dashboard-table td {
+  padding: 1.25rem 2rem;
+}
+
+.dashboard-table tbody tr {
+  border-top: 1px solid rgb(229 231 235);
+}
+
+.dashboard-table-empty {
+  padding: 2.5rem 2rem;
+  text-align: center;
+  color: rgb(107 114 128);
+}
+
+.dashboard-table-actions {
+  text-align: right;
+  white-space: nowrap;
+}

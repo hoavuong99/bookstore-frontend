@@ -1,109 +1,260 @@
-/* eslint-disable no-unused-vars */
-import React from 'react'
-import { useDeleteBookMutation, useFetchAllBooksQuery } from '../../../redux/features/books/booksApi';
-import { Link, useNavigate } from 'react-router-dom';
+/* eslint-disable react/prop-types */
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import {
+  useAddBookMutation,
+  useDeleteBookMutation,
+  useFetchAllBooksQuery,
+  useFetchAllCategoriesQuery,
+  useUpdateBookMutation,
+} from "../../../redux/features/books/booksApi";
+import Loading from "../../../components/Loading";
+import ListTable from "../../../components/dashboard/ListTable";
+
+const emptyBook = {
+  title: "",
+  isbn: "",
+  price: "",
+  stockQuantity: "",
+  categoryIds: [],
+  description: "",
+  imageUrl: "",
+};
+
+const getErrorMessage = (error, fallback) =>
+  error?.data?.message || error?.error || fallback;
+
+const BookFormModal = ({ book, onClose, onSaved }) => {
+  const isEditing = Boolean(book);
+  const { data: categories = [], isLoading: isLoadingCategories } =
+    useFetchAllCategoriesQuery();
+  const [addBook, { isLoading: isAdding }] = useAddBookMutation();
+  const [updateBook, { isLoading: isUpdating }] = useUpdateBookMutation();
+  const [imageFile, setImageFile] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: book
+      ? {
+          ...book,
+          categoryIds: book.categoryIds.map(String),
+        }
+      : emptyBook,
+  });
+
+  const isSaving = isAdding || isUpdating;
+
+  useEffect(() => {
+    reset(
+      book
+        ? {
+            ...book,
+            categoryIds: Array.isArray(book.categoryIds)
+              ? book.categoryIds.map(String)
+              : [],
+          }
+        : emptyBook
+    );
+  }, [book, categories, reset]);
+
+  const onSubmit = async (data) => {
+    setErrorMessage("");
+    const payload = {
+      title: data.title.trim(),
+      isbn: data.isbn.trim(),
+      price: Number(data.price),
+      stockQuantity: Number(data.stockQuantity),
+      categoryIds: data.categoryIds.map(Number),
+      description: data.description?.trim() || "",
+      imageUrl: data.imageUrl?.trim() || null,
+    };
+
+    try {
+      if (isEditing) {
+        await updateBook({ id: book.id, ...payload }).unwrap();
+      } else {
+        let requestBody = payload;
+        if (imageFile) {
+          const formData = new FormData();
+          formData.append("title", payload.title);
+          formData.append("isbn", payload.isbn);
+          formData.append("price", String(payload.price));
+          formData.append("stockQuantity", String(payload.stockQuantity));
+          payload.categoryIds.forEach((categoryId) =>
+            formData.append("categoryIds", String(categoryId))
+          );
+          formData.append("description", payload.description);
+          formData.append("image", imageFile);
+          requestBody = formData;
+        }
+        await addBook(requestBody).unwrap();
+      }
+      onSaved(isEditing ? "Book updated successfully." : "Book created successfully.");
+    } catch (error) {
+      setErrorMessage(
+        getErrorMessage(error, isEditing ? "Unable to update the book." : "Unable to create the book.")
+      );
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-6 shadow-xl">
+        <div className="mb-5 flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-gray-800">
+            {isEditing ? "Edit Book" : "Add New Book"}
+          </h2>
+          <button type="button" onClick={onClose} className="text-2xl text-gray-500 hover:text-gray-800">
+            &times;
+          </button>
+        </div>
+        {errorMessage && <p className="mb-4 text-sm text-red-700">{errorMessage}</p>}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {[
+            ["title", "Title", "text"],
+            ["isbn", "ISBN", "text"],
+            ["price", "Price", "number"],
+            ["stockQuantity", "Stock Quantity", "number"],
+          ].map(([name, label, type]) => (
+            <div key={name}>
+              <label className="mb-1 block text-sm font-semibold text-gray-700" htmlFor={`book-${name}`}>
+                {label}
+              </label>
+              <input
+                id={`book-${name}`}
+                type={type}
+                {...register(name, { required: true })}
+                className="w-full rounded-md border p-2 focus:border-blue-300 focus:outline-none focus:ring"
+              />
+              {errors[name] && <p className="text-sm text-red-600">{label} is required.</p>}
+            </div>
+          ))}
+
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-gray-700" htmlFor="book-categoryIds">
+              Categories
+            </label>
+            <select
+              id="book-categoryIds"
+              multiple
+              disabled={isLoadingCategories}
+              {...register("categoryIds", { required: true })}
+              className="min-h-24 w-full rounded-md border p-2 focus:border-blue-300 focus:outline-none focus:ring"
+            >
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>{category.name}</option>
+              ))}
+            </select>
+            {errors.categoryIds && <p className="text-sm text-red-600">Select at least one category.</p>}
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-gray-700" htmlFor="book-description">
+              Description
+            </label>
+            <textarea id="book-description" {...register("description")} className="min-h-24 w-full rounded-md border p-2" />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-gray-700" htmlFor="book-imageUrl">
+              Image URL
+            </label>
+            <input id="book-imageUrl" {...register("imageUrl")} className="w-full rounded-md border p-2" />
+          </div>
+
+          {!isEditing && (
+            <div>
+              <label className="mb-1 block text-sm font-semibold text-gray-700" htmlFor="book-image">
+                Cover Image Upload
+              </label>
+              <input id="book-image" type="file" accept="image/*" onChange={(event) => setImageFile(event.target.files[0] || null)} />
+            </div>
+          )}
+
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={onClose} className="rounded-md border px-4 py-2">Cancel</button>
+            <button type="submit" disabled={isSaving} className="rounded-md bg-purple-600 px-4 py-2 font-semibold text-white disabled:bg-purple-300">
+              {isSaving ? "Saving..." : isEditing ? "Update Book" : "Add Book"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
 
 const ManageBooks = () => {
-    const navigate = useNavigate();
+  const { data: books = [], isLoading, isError, error } = useFetchAllBooksQuery();
+  const [deleteBook, { isLoading: isDeleting }] = useDeleteBookMutation();
+  const [modalBook, setModalBook] = useState(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-    const {data: books, refetch} = useFetchAllBooksQuery()
+  const closeModal = () => {
+    setModalBook(null);
+    setIsAdding(false);
+  };
 
-    const [deleteBook] = useDeleteBookMutation()
+  const handleDelete = async (book) => {
+    if (!window.confirm(`Delete "${book.title}"?`)) return;
+    setMessage("");
+    setErrorMessage("");
+    try {
+      await deleteBook(book.id).unwrap();
+      setMessage("Book deleted successfully.");
+    } catch (requestError) {
+      setErrorMessage(getErrorMessage(requestError, "Unable to delete the book."));
+    }
+  };
 
-    // Handle deleting a book
-    const handleDeleteBook = async (id) => {
-        try {
-            await deleteBook(id).unwrap();
-            alert('Book deleted successfully!');
-            refetch();
+  if (isLoading) return <Loading />;
+  if (isError) return <div className="rounded-md bg-red-50 p-4 text-red-700">{getErrorMessage(error, "Unable to load books.")}</div>;
 
-        } catch (error) {
-            console.error('Failed to delete book:', error.message);
-            alert('Failed to delete book. Please try again.');
-        }
-    };
-
-    // Handle navigating to Edit Book page
-    const handleEditClick = (id) => {
-        navigate(`dashboard/edit-book/${id}`);
-    };
   return (
-    <section className="py-1 bg-blueGray-50">
-    <div className="w-full xl:w-8/12 mb-12 xl:mb-0 px-4 mx-auto mt-24">
-        <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded ">
-            <div className="rounded-t mb-0 px-4 py-3 border-0">
-                <div className="flex flex-wrap items-center">
-                    <div className="relative w-full px-4 max-w-full flex-grow flex-1">
-                        <h3 className="font-semibold text-base text-blueGray-700">All Books</h3>
-                    </div>
-                    <div className="relative w-full px-4 max-w-full flex-grow flex-1 text-right">
-                        <button className="bg-indigo-500 text-white active:bg-indigo-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">See all</button>
-                    </div>
-                </div>
-            </div>
+    <section className="dashboard-table-section">
+      <div className="mb-6 flex items-center justify-between">
+        <button onClick={() => { setMessage(""); setErrorMessage(""); setIsAdding(true); }} className="rounded-md bg-purple-600 px-4 py-2 font-semibold text-white hover:bg-purple-700">
+          Add New Book
+        </button>
+      </div>
+      {message && <p className="mb-4 text-sm text-green-700">{message}</p>}
+      {errorMessage && <p className="mb-4 text-sm text-red-700">{errorMessage}</p>}
+      <ListTable
+        columns={[
+          { label: "Title" },
+          { label: "Categories" },
+          { label: "Price" },
+          { label: "Stock" },
+          { label: "Actions", className: "dashboard-table-actions" },
+        ]}
+        emptyMessage="No books have been created."
+      >
+        {books.length > 0 &&
+          books.map((book) => (
+              <tr key={book.id}>
+                <td className="font-medium">{book.title}</td>
+                <td>{book.categoryNames.join(", ") || "—"}</td>
+                <td>${book.newPrice}</td>
+                <td className={book.stockQuantity > 0 ? "text-green-600" : "text-red-600"}>
+                  {book.stockQuantity ?? 0}
+                </td>
+                <td className="dashboard-table-actions space-x-3">
+                  <button onClick={() => { setMessage(""); setErrorMessage(""); setModalBook(book); }} className="font-medium text-indigo-600">Edit</button>
+                  <button onClick={() => handleDelete(book)} disabled={isDeleting} className="font-medium text-red-600 disabled:text-red-300">Delete</button>
+                </td>
+              </tr>
+            ))}
+      </ListTable>
+      {(isAdding || modalBook) && (
+        <BookFormModal book={modalBook} onClose={closeModal} onSaved={(successMessage) => { closeModal(); setMessage(successMessage); }} />
+      )}
+    </section>
+  );
+};
 
-            <div className="block w-full overflow-x-auto">
-                <table className="items-center bg-transparent w-full border-collapse ">
-                    <thead>
-                        <tr>
-                            <th className="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-                                #
-                            </th>
-                            <th className="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-                                Book Title
-                            </th>
-                            <th className="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-                                Category
-                            </th>
-                            <th className="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-                                Price
-                            </th>
-                            <th className="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-                                Actions
-                            </th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {
-                            books && books.map((book, index) => (
-                                <tr key={index}>
-                                <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 ">
-                                   {index + 1}
-                                </th>
-                                <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 ">
-                                    {book.title}
-                                </td>
-                                <td className="border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                                  {book.category}
-                                </td>
-                                <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-
-                                    ${book.newPrice}
-                                </td>
-                                <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 space-x-4">
-
-                                    <Link to={`/dashboard/edit-book/${book._id}`} className="font-medium text-indigo-600 hover:text-indigo-700 mr-2 hover:underline underline-offset-2">
-                                        Edit
-                                    </Link>
-                                    <button 
-                                    onClick={() => handleDeleteBook(book._id)}
-                                    className="font-medium bg-red-500 py-1 px-4 rounded-full text-white mr-2">Delete</button>
-                                </td>
-                            </tr> 
-                            ))
-                        }
-         
-
-                    </tbody>
-
-                </table>
-            </div>
-        </div>
-    </div>
-
-</section>
-  )
-}
-
-export default ManageBooks
+export default ManageBooks;

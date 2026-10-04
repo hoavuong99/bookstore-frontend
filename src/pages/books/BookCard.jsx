@@ -2,14 +2,38 @@
 import { FiShoppingCart } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { getImgUrl } from "../../utils/getImgUrl";
-import { useDispatch } from "react-redux";
-import { addToCart } from "../../redux/features/cart/cartSlice";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { useAddToCartMutation } from "../../redux/features/books/booksApi";
+import Swal from "sweetalert2";
 
 const BookCard = ({ book }) => {
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  const [addToCart, { isLoading }] = useAddToCartMutation();
 
-  const handleAddToCart = (product) => {
-    dispatch(addToCart(product));
+  const handleAddToCart = async (product) => {
+    if (!currentUser) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      await addToCart({ bookId: product.id || product._id, quantity: 1 }).unwrap();
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "Product added to the cart",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Unable to add product",
+        text: error?.data?.message || "Please try again.",
+      });
+    }
   };
   return (
     <div className="rounded-lg transition-shadow duration-300">
@@ -41,13 +65,20 @@ const BookCard = ({ book }) => {
               $ {book?.oldPrice}
             </span>
           </p>
+          <p className="mt-2 text-sm text-gray-600">
+            <strong>Stock:</strong>{" "}
+            <span className={book?.stockQuantity > 0 ? "text-green-600" : "text-red-600"}>
+              {book?.stockQuantity ?? 0}
+            </span>
+          </p>
           <div className="w-full flex justify-center sm:justify-start mt-4">
             <button
               onClick={() => handleAddToCart(book)}
-              className="btn-primary px-6 space-x-1 flex items-center gap-1"
+              disabled={isLoading || book?.stockQuantity <= 0}
+              className="btn-primary flex items-center gap-1 px-6 space-x-1 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <FiShoppingCart className="w-5 h-5" />
-              <span className="">Add to Cart</span>
+              <span>{book?.stockQuantity > 0 ? "Add to Cart" : "Out of Stock"}</span>
             </button>
           </div>
         </div>

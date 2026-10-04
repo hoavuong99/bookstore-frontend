@@ -12,25 +12,19 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { useFetchAllBooksQuery } from "../../redux/features/books/booksApi";
-
-const categories = [
-  "Choose a genre",
-  "Business",
-  "Fiction",
-  "Horror",
-  "Adventure",
-];
+import { useFetchAllCategoriesQuery } from "../../redux/features/books/booksApi";
 
 const TopSellers = () => {
-  const [selectedCategory, setSelectedCategory] = useState("Choose a genre");
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
 
   const { data: books = [] } = useFetchAllBooksQuery();
+  const { data: categories = [] } = useFetchAllCategoriesQuery();
 
   const filteredBooks =
-    selectedCategory === "Choose a genre"
+    !selectedCategoryId
       ? books
       : books.filter(
-          (book) => book.category === selectedCategory.toLowerCase()
+          (book) => book.categoryIds.includes(Number(selectedCategoryId))
         );
 
   return (
@@ -39,14 +33,16 @@ const TopSellers = () => {
       {/* category filtering */}
       <div className="mb-8 flex items-center">
         <select
-          onChange={(e) => setSelectedCategory(e.target.value)}
+          value={selectedCategoryId}
+          onChange={(e) => setSelectedCategoryId(e.target.value)}
           name="category"
           id="category"
           className="border bg-[#EAEAEA] border-gray-300 rounded-md px-4 py-2 focus:outline-none"
         >
-          {categories.map((category, index) => (
-            <option key={index} value={category}>
-              {category}
+          <option value="">All categories</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
             </option>
           ))}
         </select>

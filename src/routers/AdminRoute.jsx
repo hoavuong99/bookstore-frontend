@@ -1,10 +1,11 @@
 /* eslint-disable react/prop-types */
 import { Navigate, Outlet } from 'react-router-dom';
+import { isAdminToken } from "../utils/auth";
 
 const AdminRoute = ({children}) => {
   const token = localStorage.getItem('token');
-  if(!token) {
-    return <Navigate to="/admin"/>
+  if(!isAdminToken(token)) {
+    return <Navigate to="/login" replace/>
   }
   return children ?  children : <Outlet/>;
 }

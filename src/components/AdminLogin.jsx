@@ -36,7 +36,6 @@ const AdminLogin = () => {
                 }, 3600 * 1000)
             }
 
-            alert("Admin Login successful!")
             navigate("/dashboard")
 
         } catch (error) {

@@ -1,20 +1,24 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unknown-property */
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 import Swal from "sweetalert2";
 import { useCreateOrderMutation } from "../../redux/features/orders/ordersApi";
+import { useGetCartQuery } from "../../redux/features/books/booksApi";
+import booksApi from "../../redux/features/books/booksApi";
 
 const CheckoutPage = () => {
-  const cartItems = useSelector((state) => state.cart.cartItems);
-  const totalPrice = cartItems
-    .reduce((acc, item) => acc + item.newPrice, 0)
-    .toFixed(2);
+  const { data: cart, isLoading: isLoadingCart, isError: isCartError } =
+    useGetCartQuery();
+  const cartItems = cart?.items || [];
+  const totalPrice = Number(cart?.subtotal || 0).toFixed(2);
   const { currentUser } = useAuth();
+  const dispatch = useDispatch();
+  const [isChecked, setIsChecked] = useState(false);
   const {
     register,
     handleSubmit,
@@ -25,32 +29,25 @@ const CheckoutPage = () => {
   const [createOrder, { isLoading, error }] = useCreateOrderMutation();
   const navigate = useNavigate();
 
-  const [isChecked, setIsChecked] = useState(false);
   const onSubmit = async (data) => {
     const newOrder = {
-      name: currentUser?.displayName,
-      email: currentUser?.email,
-      address: {
-        city: data.city,
-        country: data.country,
-        state: data.state,
-        zipcode: data.zipcode,
-      },
-      phone: data.phone,
-      productIds: cartItems.map((item) => item?._id),
-      totalPrice: totalPrice,
+      shippingAddress: [data.address, data.city, data.state, data.country, data.zipcode]
+        .filter(Boolean)
+        .join(", "),
+      recipientName:
+        currentUser?.fullName || currentUser?.displayName || currentUser?.email,
+      recipientPhone: data.phone,
+      paymentMethod: "COD",
     };
 
     try {
       await createOrder(newOrder).unwrap();
+      dispatch(booksApi.util.invalidateTags(["Cart", "Books"]));
       Swal.fire({
-        title: "Confirmed Order",
-        text: "Your order placed successfully!",
-        icon: "warning",
-        showCancelButton: true,
+        title: "Order placed",
+        text: "Your order was placed successfully.",
+        icon: "success",
         confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, It's Okay!",
       });
       navigate("/orders");
     } catch (error) {
@@ -59,7 +56,8 @@ const CheckoutPage = () => {
     }
   };
 
-  if (isLoading) return <div>Loading....</div>;
+  if (isLoading || isLoadingCart) return <div>Loading....</div>;
+  if (isCartError) return <div>Unable to load your cart.</div>;
   return (
     <section>
       <div className="min-h-screen p-6 bg-gray-100 flex items-center justify-center">
@@ -71,7 +69,7 @@ const CheckoutPage = () => {
               </h2>
               <p className="text-gray-500 mb-2">Total Price: ${totalPrice}</p>
               <p className="text-gray-500 mb-6">
-                Items: {cartItems.length > 0 ? cartItems.length : 0}
+                Items: {cart?.totalItems || 0}
               </p>
             </div>
 

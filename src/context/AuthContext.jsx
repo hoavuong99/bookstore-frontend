@@ -1,6 +1,10 @@
 /* eslint-disable react/prop-types */
 import axios from "axios";
 import { createContext, useContext, useMemo, useState } from "react";
+import {
+  getTokenPayload,
+  isAuthenticatedToken,
+} from "../utils/auth";
 
 const AuthContext = createContext();
 
@@ -13,9 +17,21 @@ export const AuthProvide = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const raw = localStorage.getItem("user");
-      return raw ? JSON.parse(raw) : null;
+      const token = localStorage.getItem("token");
+
+      if (!raw || !isAuthenticatedToken(token)) {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        return null;
+      }
+
+      return {
+        ...JSON.parse(raw),
+        role: getTokenPayload(token).role,
+      };
     } catch {
       localStorage.removeItem("user");
+      localStorage.removeItem("token");
       return null;
     }
   });
@@ -25,20 +41,26 @@ export const AuthProvide = ({ children }) => {
     import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
 
   const persistSession = (authData) => {
+    const accessToken = authData?.accessToken;
+    const tokenPayload = getTokenPayload(accessToken);
+
+    if (!accessToken || !tokenPayload || !isAuthenticatedToken(accessToken)) {
+      throw new Error("The server returned an invalid authentication token.");
+    }
+
     const mappedUser = {
       userId: authData?.userId,
       email: authData?.email,
       fullName: authData?.fullName,
       displayName: authData?.fullName,
       name: authData?.fullName,
-      role: authData?.role,
+      role: tokenPayload.role,
     };
-
-    const accessToken = authData?.accessToken || "";
 
     localStorage.setItem("user", JSON.stringify(mappedUser));
     localStorage.setItem("token", accessToken);
     setCurrentUser(mappedUser);
+    return mappedUser;
   };
 
   const extractAuthData = (response) => {
@@ -59,8 +81,7 @@ export const AuthProvide = ({ children }) => {
     });
 
     const authData = extractAuthData(response);
-    persistSession(authData);
-    return authData;
+    return persistSession(authData);
   };
 
   // login the user
@@ -71,8 +92,7 @@ export const AuthProvide = ({ children }) => {
     });
 
     const authData = extractAuthData(response);
-    persistSession(authData);
-    return authData;
+    return persistSession(authData);
   };
 
   // sing up with google

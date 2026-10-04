@@ -20,25 +20,16 @@ const UserDashboard = () => {
                         <ul className="space-y-6">
                             {orders.map((order, index) => (
                                 <li
-                                    key={order._id}
+                                    key={order.orderId}
                                     className="bg-gray-50 border border-gray-200 p-6 rounded-lg shadow-sm hover:shadow-xl transition-shadow duration-500"
                                 >
                                     <div className="flex items-center justify-between">
                                         <h3 className="text-lg font-semibold text-gray-800">Order #{index + 1}</h3>
                                         <span className="text-sm text-gray-600">Date: {new Date(order?.createdAt).toLocaleDateString()}</span>
                                     </div>
-                                    <p className="text-gray-700 mt-2">Order ID: <span className="font-medium">{order._id}</span></p>
-                                    <p className="text-gray-700">Total: <span className="font-medium">${order.totalPrice}</span></p>
-                                    <div className="mt-4">
-                                        <h4 className="text-gray-800 font-medium mb-2">Products:</h4>
-                                        <ul className="list-decimal list-inside text-gray-700 space-y-1">
-                                            {order.productIds.map((productId) => (
-                                                <li key={productId} className="hover:text-blue-600 transition-colors duration-300">
-                                                    {productId}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
+                                    <p className="text-gray-700 mt-2">Order ID: <span className="font-medium">{order.orderId}</span></p>
+                                    <p className="text-gray-700">Total: <span className="font-medium">${order.totalAmount}</span></p>
+                                    <p className="text-gray-700">Status: <span className="font-medium">{order.orderStatus}</span></p>
                                 </li>
                             ))}
                         </ul>
