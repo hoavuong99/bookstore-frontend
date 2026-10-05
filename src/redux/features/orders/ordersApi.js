@@ -24,20 +24,22 @@ const ordersApi = createApi({
             })
         }),
         getOrderByEmail: builder.query({
-            query: () => ({
-                url: "/my-orders",
-            }),
+            query: ({ page = 0, size = 10 } = {}) => `/my-orders?page=${page}&size=${size}`,
             transformResponse: (response) => {
                 const data = response?.data || response;
-                return Array.isArray(data) ? data : data?.content || [];
+                return Array.isArray(data)
+                    ? { content: data, totalPages: 1 }
+                    : data;
             },
             providesTags: ['Orders']
         }),
         getAllOrders: builder.query({
-            query: () => "/admin/all?page=0&size=100",
+            query: ({ page = 0, size = 10 } = {}) => `/admin/all?page=${page}&size=${size}`,
             transformResponse: (response) => {
                 const data = response?.data || response;
-                return Array.isArray(data) ? data : data?.content || [];
+                return Array.isArray(data)
+                    ? { content: data, totalPages: 1 }
+                    : data;
             },
             providesTags: ["Orders"],
         }),

@@ -3,11 +3,13 @@ import { useState } from "react";
 import {
   useCreateCategoryMutation,
   useDeleteCategoryMutation,
-  useFetchAllCategoriesQuery,
+  useFetchCategoriesPageQuery,
   useUpdateCategoryMutation,
 } from "../../../redux/features/books/booksApi";
 import Loading from "../../../components/Loading";
 import ListTable from "../../../components/dashboard/ListTable";
+import TablePagination from "../../../components/dashboard/TablePagination";
+import confirmAction from "../../../utils/confirmAction";
 
 const emptyCategory = { name: "", description: "" };
 const getErrorMessage = (error, fallback) => error?.data?.message || error?.error || fallback;
@@ -59,12 +61,16 @@ const CategoryFormModal = ({ category, onClose, onSaved }) => {
 };
 
 const ManageCategories = () => {
-  const { data: categories = [], isLoading, isError, error } = useFetchAllCategoriesQuery();
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const { data: categoryPage = {}, isLoading, isError, error } = useFetchCategoriesPageQuery({ page, size: pageSize });
   const [deleteCategory, { isLoading: isDeleting }] = useDeleteCategoryMutation();
   const [modalCategory, setModalCategory] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const categories = categoryPage.content || [];
+  const totalPages = categoryPage.totalPages || 0;
 
   const closeModal = () => {
     setModalCategory(null);
@@ -72,7 +78,7 @@ const ManageCategories = () => {
   };
 
   const handleDelete = async (category) => {
-    if (!window.confirm(`Delete "${category.name}"?`)) return;
+    if (!(await confirmAction("Delete category?", `Are you sure you want to delete "${category.name}"?`))) return;
     setMessage("");
     setErrorMessage("");
     try {
@@ -107,6 +113,7 @@ const ManageCategories = () => {
             ))}
       </ListTable>
       {(isAdding || modalCategory) && <CategoryFormModal category={modalCategory} onClose={closeModal} onSaved={(successMessage) => { closeModal(); setMessage(successMessage); }} />}
+      <TablePagination page={page} pageSize={pageSize} totalPages={totalPages} onPageChange={setPage} onPageSizeChange={(size) => { setPageSize(size); setPage(0); }} />
     </section>
   );
 };

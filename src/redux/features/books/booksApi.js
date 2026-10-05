@@ -24,6 +24,17 @@ const normalizeBook = (book) => ({
     category: Array.isArray(book?.categoryNames) ? book.categoryNames.join(', ') : '',
 });
 
+const normalizeBookPage = (response) => {
+    const data = unwrapApiResponse(response);
+    if (Array.isArray(data)) return { content: data.map(normalizeBook), totalPages: 1 };
+    return { ...data, content: (data?.content || []).map(normalizeBook) };
+};
+
+const normalizeCategoryPage = (response) => {
+    const data = unwrapApiResponse(response);
+    return Array.isArray(data) ? { content: data, totalPages: 1 } : { ...data, content: data?.content || [] };
+};
+
 const unwrapApiResponse = (response) => {
     if (response?.success === true) {
         return response.data;
@@ -39,6 +50,11 @@ const booksApi = createApi({
         fetchAllCategories: builder.query({
             query: () => "/categories",
             transformResponse: unwrapApiResponse,
+            providesTags: ["Categories"],
+        }),
+        fetchCategoriesPage: builder.query({
+            query: ({ page = 0, size = 10 } = {}) => `/categories?page=${page}&size=${size}`,
+            transformResponse: normalizeCategoryPage,
             providesTags: ["Categories"],
         }),
         createCategory: builder.mutation({
@@ -71,6 +87,20 @@ const booksApi = createApi({
                 return Array.isArray(data) ? data.map(normalizeBook) : [];
             },
             providesTags: ["Books"]
+        }),
+        fetchBooksPage: builder.query({
+            query: ({ page = 0, size = 10, search = "" } = {}) =>
+                `/books?page=${page}&size=${size}${search ? `&search=${encodeURIComponent(search)}` : ""}`,
+            transformResponse: normalizeBookPage,
+            providesTags: ["Books"],
+        }),
+        fetchBestSellers: builder.query({
+            query: ({ size = 10 } = {}) => `/books/best-sellers?size=${size}`,
+            transformResponse: (response) => {
+                const data = unwrapApiResponse(response);
+                return Array.isArray(data) ? data.map(normalizeBook) : [];
+            },
+            providesTags: ["Books"],
         }),
         fetchBookById: builder.query({
             query: (id) => `/books/${id}`,
@@ -138,10 +168,13 @@ const booksApi = createApi({
 
 export const {
     useFetchAllCategoriesQuery,
+    useFetchCategoriesPageQuery,
     useCreateCategoryMutation,
     useUpdateCategoryMutation,
     useDeleteCategoryMutation,
     useFetchAllBooksQuery,
+    useFetchBooksPageQuery,
+    useFetchBestSellersQuery,
     useFetchBookByIdQuery,
     useAddBookMutation,
     useUpdateBookMutation,

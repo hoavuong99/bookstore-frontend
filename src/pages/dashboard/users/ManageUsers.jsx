@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Loading from "../../../components/Loading";
 import ListTable from "../../../components/dashboard/ListTable";
+import TablePagination from "../../../components/dashboard/TablePagination";
 import {
   useGetUsersQuery,
   useUpdateUserRoleMutation,
@@ -12,7 +13,8 @@ const getErrorMessage = (error, fallback) =>
 
 const ManageUsers = () => {
   const [page, setPage] = useState(0);
-  const { data, isLoading, isError, error } = useGetUsersQuery({ page, size: 10 });
+  const [pageSize, setPageSize] = useState(10);
+  const { data, isLoading, isError, error } = useGetUsersQuery({ page, size: pageSize });
   const [updateUserRole, { isLoading: isUpdating }] = useUpdateUserRoleMutation();
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -93,29 +95,7 @@ const ManageUsers = () => {
             </tr>
           ))}
       </ListTable>
-      {totalPages > 1 && (
-        <div className="mt-6 flex items-center justify-between">
-          <button
-            type="button"
-            disabled={page === 0}
-            onClick={() => setPage((currentPage) => currentPage - 1)}
-            className="rounded-md border px-4 py-2 disabled:opacity-40"
-          >
-            Previous
-          </button>
-          <span className="text-sm text-gray-600">
-            Page {page + 1} of {totalPages}
-          </span>
-          <button
-            type="button"
-            disabled={page + 1 >= totalPages}
-            onClick={() => setPage((currentPage) => currentPage + 1)}
-            className="rounded-md border px-4 py-2 disabled:opacity-40"
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <TablePagination page={page} pageSize={pageSize} totalPages={totalPages} onPageChange={setPage} onPageSizeChange={(size) => { setPageSize(size); setPage(0); }} />
       {selectedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">

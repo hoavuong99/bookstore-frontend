@@ -1,65 +1,26 @@
-// Import Swiper React components
-import { Swiper, SwiperSlide } from 'swiper/react';
-
-// import required modules
-import { Pagination, Navigation } from 'swiper/modules';
-
-// Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
-import BookCard from '../books/BookCard';
-import { useFetchAllBooksQuery } from '../../redux/features/books/booksApi';
-
+import BookCard from "../books/BookCard";
+import { useFetchBestSellersQuery } from "../../redux/features/books/booksApi";
 
 const Recommened = () => {
-   
+  const { data: books = [], isLoading, isError } = useFetchBestSellersQuery({ size: 10 });
 
-    const {data: books = []} = useFetchAllBooksQuery();
   return (
-    <div className='py-16'>
-         <h2 className='text-3xl font-semibold mb-6'>Recommended for you </h2>
+    <section className="py-10">
+      <h2 className="mb-6 text-3xl font-semibold">Top 10 Best Sellers</h2>
+      {isLoading && <p className="text-gray-500">Loading best sellers...</p>}
+      {isError && <p className="text-red-600">Unable to load best sellers.</p>}
+      {!isLoading && !isError && books.length === 0 && (
+        <p className="text-gray-500">No best sellers are available yet.</p>
+      )}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {books.map((book) => (
+          <div key={book._id}>
+            <BookCard book={book} />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
 
-
-         <Swiper
-                slidesPerView={1}
-                spaceBetween={30}
-                navigation={true}
-                breakpoints={{
-                    640: {
-                        slidesPerView: 1,
-                        spaceBetween: 20,
-                    },
-                    768: {
-                        slidesPerView: 2,
-                        spaceBetween: 40,
-                    },
-                    1024: {
-                        slidesPerView: 2,
-                        spaceBetween: 50,
-                    },
-                    1180: {
-                        slidesPerView: 3,
-                        spaceBetween: 50,
-                    }
-                }}
-                modules={[Pagination, Navigation]}
-                className="mySwiper"
-            >
-
-                {
-                   books.length > 0 && books.slice(8, 18).map((book, index) => (
-                        <SwiperSlide key={index}>
-                            <BookCard  book={book} />
-                        </SwiperSlide>
-                    ))
-                }
-
-
-
-            </Swiper>
-    </div>
-  )
-}
-
-export default Recommened
+export default Recommened;

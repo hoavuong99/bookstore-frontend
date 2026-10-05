@@ -14,7 +14,6 @@ const Register = () => {
     const {
         register,
         handleSubmit,
-        watch,
         formState: { errors },
       } = useForm()
 
@@ -32,7 +31,7 @@ const Register = () => {
             showSuccessToast("User registered successfully.");
             navigate("/")
         } catch (error) {
-           const errorMessage = error?.response?.data?.message || "Please provide valid information";
+           const errorMessage = error?.response?.data?.message || error?.message || "Please provide valid information";
            setMessage(errorMessage);
            showErrorToast(errorMessage);
            console.error(error)
@@ -51,6 +50,7 @@ const Register = () => {
                 type="text" name="fullName" id="fullName" placeholder='Full Name'
                 className='shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow'
                 />
+                {errors.fullName && <p className='mt-1 text-xs text-red-500'>Full name is required.</p>}
             </div>
             <div className='mb-4'>
                 <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="email">Email</label>
@@ -59,6 +59,7 @@ const Register = () => {
                 type="email" name="email" id="email" placeholder='Email Address'
                 className='shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow'
                 />
+                {errors.email && <p className='mt-1 text-xs text-red-500'>A valid email is required.</p>}
             </div>
             <div className='mb-4'>
                 <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="password">Password</label>
@@ -67,6 +68,7 @@ const Register = () => {
                 type="password" name="password" id="password" placeholder='Password'
                 className='shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow'
                 />
+                {errors.password && <p className='mt-1 text-xs text-red-500'>Password must be at least 8 characters.</p>}
             </div>
             <div className='mb-4'>
                 <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="phone">Phone</label>
@@ -88,7 +90,7 @@ const Register = () => {
                 message && <p className='text-red-500 text-xs italic mb-3'>{message}</p>
             }
             <div>
-                <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded focus:outline-none'>Register</button>
+                <button type="submit" className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded focus:outline-none'>Register</button>
             </div>
         </form>
         <p className='align-baseline font-medium mt-4 text-sm'>Have an account? Please <Link to="/login" className='text-blue-500 hover:text-blue-700'>Login</Link></p>

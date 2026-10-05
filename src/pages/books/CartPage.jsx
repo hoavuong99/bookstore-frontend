@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { getImgUrl } from "../../utils/getImgUrl";
+import confirmAction from "../../utils/confirmAction";
 import {
   useGetCartQuery,
   useClearCartMutation,
@@ -14,10 +15,12 @@ const CartPage = () => {
   const totalPrice = Number(cart?.subtotal || 0).toFixed(2);
 
   const handleRemoveFromCart = async (itemId) => {
+    if (!(await confirmAction("Remove item?", "Are you sure you want to remove this item from your cart?"))) return;
     await removeFromCart(itemId).unwrap();
   };
 
   const handleClearCart = async () => {
+    if (!(await confirmAction("Clear cart?", "Are you sure you want to remove all items from your cart?"))) return;
     try {
       await clearCart().unwrap();
     } catch (error) {

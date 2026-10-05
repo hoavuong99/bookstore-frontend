@@ -11,6 +11,7 @@ const DashboardLayout = () => {
   const isCategoriesActive = location.pathname === "/dashboard/categories";
   const isOrdersActive = location.pathname === "/dashboard/orders";
   const isUsersActive = location.pathname === "/dashboard/users";
+  const isProfileActive = location.pathname === "/dashboard/profile";
   const pageTitle =
     location.pathname === "/dashboard/manage-books"
       ? "Books"
@@ -20,6 +21,10 @@ const DashboardLayout = () => {
           ? "Orders"
           : location.pathname === "/dashboard/users"
             ? "Users"
+          : location.pathname === "/dashboard/profile"
+            ? "Profile"
+          : location.pathname === "/dashboard/change-password"
+            ? "Change Password"
         : "Dashboard";
   const userName =
     currentUser?.fullName || currentUser?.displayName || currentUser?.email;
@@ -148,7 +153,7 @@ const DashboardLayout = () => {
         </div>
       </aside>
       <div className="flex-grow text-gray-800">
-        <header className="flex items-center h-20 px-6 sm:px-10 bg-white">
+        <header className="relative flex items-center h-20 px-6 sm:px-10 bg-white">
           <button className="block sm:hidden relative flex-shrink-0 p-2 mr-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 focus:bg-gray-100 focus:text-gray-800 rounded-full">
             <span className="sr-only">Menu</span>
             <svg
@@ -167,7 +172,8 @@ const DashboardLayout = () => {
             </svg>
           </button>
           <div className="flex flex-shrink-0 items-center ml-auto">
-            <button className="inline-flex items-center p-2 hover:bg-gray-100 focus:bg-gray-100 rounded-lg">
+            <details className="relative">
+              <summary className="inline-flex cursor-pointer list-none items-center rounded-lg p-2 hover:bg-gray-100 focus:bg-gray-100">
               <span className="sr-only">User Menu</span>
               <div className="hidden md:flex md:flex-col md:items-end md:leading-tight">
                 <span className="font-semibold">{userName}</span>
@@ -188,29 +194,30 @@ const DashboardLayout = () => {
                   clipRule="evenodd"
                 />
               </svg>
-            </button>
-            <div className="border-l pl-3 ml-3 space-x-1">
-              <button
-                onClick={handleLogout}
-                className="relative p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:bg-gray-100 focus:text-gray-600 rounded-full"
-              >
-                <span className="sr-only">Log out</span>
-                <svg
-                  aria-hidden="true"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  className="h-6 w-6"
+              </summary>
+              <div className="absolute right-0 top-16 z-30 w-48 rounded-md border bg-white p-2 shadow-lg">
+                <Link
+                  to="/dashboard/profile"
+                  className={`block rounded px-3 py-2 text-sm ${
+                    isProfileActive ? "bg-purple-50 text-purple-700" : "hover:bg-gray-100"
+                  }`}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                  />
-                </svg>
-              </button>
-            </div>
+                  Update Profile
+                </Link>
+                <Link
+                  to="/dashboard/change-password"
+                  className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
+                >
+                  Change Password
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full rounded px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                >
+                  Logout
+                </button>
+              </div>
+            </details>
           </div>
         </header>
         <main className="p-6 sm:p-10 space-y-6 ">

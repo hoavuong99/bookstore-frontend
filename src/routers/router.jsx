@@ -11,11 +11,14 @@ import AdminRoute from "./AdminRoute";
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
 import Dashboard from "../pages/dashboard/Dashboard";
 import ManageBooks from "../pages/dashboard/manageBooks/ManageBooks";
-import UserDashboard from "../pages/dashboard/users/UserDashboard";
+import UserProfile from "../pages/dashboard/users/UserProfile";
+import UserChangePassword from "../pages/dashboard/users/UserChangePassword";
 import Home from "../pages/home/Home";
 import ManageCategories from "../pages/dashboard/categories/ManageCategories";
 import ManageOrders from "../pages/dashboard/orders/ManageOrders";
 import ManageUsers from "../pages/dashboard/users/ManageUsers";
+import AdminProfile from "../pages/dashboard/AdminProfile";
+import AdminChangePassword from "../pages/dashboard/AdminChangePassword";
 
 const router = createBrowserRouter([
     {
@@ -55,8 +58,12 @@ const router = createBrowserRouter([
           element: <SingleBook/>
         },
         {
-          path: "/user-dashboard",
-          element: <PrivateRoute><UserDashboard/></PrivateRoute>
+          path: "/user-dashboard/profile",
+          element: <PrivateRoute><UserProfile/></PrivateRoute>
+        },
+        {
+          path: "/user-dashboard/change-password",
+          element: <PrivateRoute><UserChangePassword/></PrivateRoute>
         }
         
       ]
@@ -97,6 +104,18 @@ const router = createBrowserRouter([
           path: "users",
           element: <AdminRoute>
             <ManageUsers/>
+          </AdminRoute>
+        },
+        {
+          path: "profile",
+          element: <AdminRoute>
+            <AdminProfile/>
+          </AdminRoute>
+        },
+        {
+          path: "change-password",
+          element: <AdminRoute>
+            <AdminChangePassword/>
           </AdminRoute>
         }
       ]

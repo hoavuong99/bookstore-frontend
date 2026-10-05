@@ -4,12 +4,14 @@ import { useForm } from "react-hook-form";
 import {
   useAddBookMutation,
   useDeleteBookMutation,
-  useFetchAllBooksQuery,
+  useFetchBooksPageQuery,
   useFetchAllCategoriesQuery,
   useUpdateBookMutation,
 } from "../../../redux/features/books/booksApi";
 import Loading from "../../../components/Loading";
 import ListTable from "../../../components/dashboard/ListTable";
+import TablePagination from "../../../components/dashboard/TablePagination";
+import confirmAction from "../../../utils/confirmAction";
 
 const emptyBook = {
   title: "",
@@ -127,6 +129,7 @@ const BookFormModal = ({ book, onClose, onSaved }) => {
               <input
                 id={`book-${name}`}
                 type={type}
+                step={name === "price" ? "any" : undefined}
                 {...register(name, { required: true })}
                 className="w-full rounded-md border p-2 focus:border-blue-300 focus:outline-none focus:ring"
               />
@@ -188,12 +191,16 @@ const BookFormModal = ({ book, onClose, onSaved }) => {
 };
 
 const ManageBooks = () => {
-  const { data: books = [], isLoading, isError, error } = useFetchAllBooksQuery();
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const { data: bookPage = {}, isLoading, isError, error } = useFetchBooksPageQuery({ page, size: pageSize });
   const [deleteBook, { isLoading: isDeleting }] = useDeleteBookMutation();
   const [modalBook, setModalBook] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const books = bookPage.content || [];
+  const totalPages = bookPage.totalPages || 0;
 
   const closeModal = () => {
     setModalBook(null);
@@ -201,7 +208,7 @@ const ManageBooks = () => {
   };
 
   const handleDelete = async (book) => {
-    if (!window.confirm(`Delete "${book.title}"?`)) return;
+    if (!(await confirmAction("Delete book?", `Are you sure you want to delete "${book.title}"?`))) return;
     setMessage("");
     setErrorMessage("");
     try {
@@ -253,6 +260,7 @@ const ManageBooks = () => {
       {(isAdding || modalBook) && (
         <BookFormModal book={modalBook} onClose={closeModal} onSaved={(successMessage) => { closeModal(); setMessage(successMessage); }} />
       )}
+      <TablePagination page={page} pageSize={pageSize} totalPages={totalPages} onPageChange={setPage} onPageSizeChange={(size) => { setPageSize(size); setPage(0); }} />
     </section>
   );
 };

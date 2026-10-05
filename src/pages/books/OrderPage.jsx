@@ -1,14 +1,15 @@
+import { useState } from "react";
 import { useGetOrderByEmailQuery } from "../../redux/features/orders/ordersApi";
-import { useAuth } from "../../context/AuthContext";
 
 const OrderPage = () => {
-  const { currentUser } = useAuth();
+  const [page, setPage] = useState(0);
 
   const {
-    data: orders = [],
+    data: orderPage = {},
     isLoading,
     isError,
-  } = useGetOrderByEmailQuery(currentUser?.email);
+  } = useGetOrderByEmailQuery({ page, size: 10 });
+  const orders = orderPage.content || [];
 
   if (isLoading) 
     return <div className="text-center text-lg text-gray-600">Loading...</div>;
@@ -41,6 +42,13 @@ const OrderPage = () => {
               <p className="text-gray-700 mb-1">Payment: <span className="font-medium">{order.paymentMethod}</span></p>
             </div>
           ))}
+        </div>
+      )}
+      {orderPage.totalPages > 1 && (
+        <div className="mt-6 flex items-center justify-between">
+          <button type="button" disabled={page === 0} onClick={() => setPage((current) => current - 1)} className="rounded-md border px-4 py-2 disabled:opacity-40">Previous</button>
+          <span className="text-sm text-gray-600">Page {page + 1} of {orderPage.totalPages}</span>
+          <button type="button" disabled={page + 1 >= orderPage.totalPages} onClick={() => setPage((current) => current + 1)} className="rounded-md border px-4 py-2 disabled:opacity-40">Next</button>
         </div>
       )}
     </div>
