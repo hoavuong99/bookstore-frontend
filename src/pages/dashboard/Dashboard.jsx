@@ -3,6 +3,7 @@ import Loading from "../../components/Loading";
 import { useFetchAllBooksQuery } from "../../redux/features/books/booksApi";
 import { useGetDashboardSummaryQuery } from "../../redux/features/dashboard/dashboardApi";
 import RevenueChart from "./RevenueChart";
+import { formatVND } from "../../utils/currency";
 
 const Dashboard = () => {
   const { data: summary, isLoading: isLoadingSummary, isError } =
@@ -11,21 +12,21 @@ const Dashboard = () => {
 
   if (isLoadingSummary || isLoadingBooks) return <Loading />;
   if (isError) {
-    return <div className="rounded-md bg-red-50 p-4 text-red-700">Unable to load dashboard data.</div>;
+    return <div className="rounded-md bg-red-50 p-4 text-red-700">Không thể tải dữ liệu tổng quan.</div>;
   }
 
   const bestSellers = (summary?.bestSellers || []).slice(0, 3);
   const lowStockBooks = summary?.lowStockBooks || [];
-  const totalRevenue = Number(summary?.totalRevenue || 0).toFixed(2);
+  const totalRevenue = Number(summary?.totalRevenue || 0);
 
   return (
     <section className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         {[
-          ["Total Revenue", `$${totalRevenue}`, "text-green-600", "bg-green-100", MdTrendingUp],
-          ["Total Stock", summary?.totalStockQuantity || 0, "text-blue-600", "bg-blue-100", MdInventory2],
-          ["Products", summary?.totalBooks || books.length, "text-purple-600", "bg-purple-100", MdPeople],
-          ["Best Sellers", bestSellers.length, "text-yellow-600", "bg-yellow-100", MdLocalShipping],
+          ["Tổng doanh thu", formatVND(totalRevenue), "text-green-600", "bg-green-100", MdTrendingUp],
+          ["Tổng tồn kho", summary?.totalStockQuantity || 0, "text-blue-600", "bg-blue-100", MdInventory2],
+          ["Số đầu sách", summary?.totalBooks || books.length, "text-purple-600", "bg-purple-100", MdPeople],
+          ["Sách bán chạy", bestSellers.length, "text-yellow-600", "bg-yellow-100", MdLocalShipping],
         ].map(([label, value, textColor, backgroundColor, Icon]) => (
           <div key={label} className="flex items-center rounded-lg bg-white p-6 shadow">
             <div className={`mr-4 inline-flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full ${textColor} ${backgroundColor}`}>
@@ -41,15 +42,15 @@ const Dashboard = () => {
 
       <div className="grid gap-6 xl:grid-cols-2">
         <div className="rounded-lg bg-white p-6 shadow">
-          <h2 className="mb-4 text-xl font-semibold">Best Sellers</h2>
+          <h2 className="mb-4 text-xl font-semibold">Sách bán chạy</h2>
           {bestSellers.length === 0 ? (
-            <p className="text-gray-500">No delivered book sales yet.</p>
+            <p className="text-gray-500">Chưa có sách nào được giao.</p>
           ) : (
             <ul className="divide-y">
               {bestSellers.map((book) => (
                 <li key={book.bookId} className="flex items-center justify-between py-3">
                   <span className="font-medium">{book.title}</span>
-                  <span className="text-sm text-gray-500">{book.quantitySold} sold</span>
+                  <span className="text-sm text-gray-500">Đã bán {book.quantitySold}</span>
                 </li>
               ))}
             </ul>
@@ -57,15 +58,15 @@ const Dashboard = () => {
         </div>
 
         <div className="rounded-lg bg-white p-6 shadow">
-          <h2 className="mb-4 text-xl font-semibold">Low Stock</h2>
+          <h2 className="mb-4 text-xl font-semibold">Sắp hết hàng</h2>
           {lowStockBooks.length === 0 ? (
-            <p className="text-gray-500">All products have healthy stock levels.</p>
+            <p className="text-gray-500">Tất cả sản phẩm đều còn đủ hàng.</p>
           ) : (
             <ul className="divide-y">
               {lowStockBooks.map((book) => (
                 <li key={book.bookId} className="flex items-center justify-between py-3">
                   <span className="font-medium">{book.title}</span>
-                  <span className="font-semibold text-red-600">{book.stockQuantity} left</span>
+                  <span className="font-semibold text-red-600">Còn {book.stockQuantity}</span>
                 </li>
               ))}
             </ul>
@@ -74,7 +75,7 @@ const Dashboard = () => {
       </div>
 
       <div className="rounded-lg bg-white p-6 shadow">
-        <h2 className="mb-4 text-xl font-semibold">Revenue</h2>
+        <h2 className="mb-4 text-xl font-semibold">Doanh thu</h2>
         <RevenueChart totalRevenue={Number(summary?.totalRevenue || 0)} />
       </div>
     </section>

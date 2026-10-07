@@ -6,6 +6,7 @@ import {
   useGetAllOrdersQuery,
   useUpdateOrderStatusMutation,
 } from "../../../redux/features/orders/ordersApi";
+import { formatVND } from "../../../utils/currency";
 
 const orderStatuses = [
   "PENDING",
@@ -14,6 +15,21 @@ const orderStatuses = [
   "DELIVERED",
   "CANCELLED",
 ];
+
+const orderStatusLabels = {
+  PENDING: "Đang xử lý",
+  CONFIRMED: "Đã xác nhận",
+  SHIPPING: "Đang giao hàng",
+  DELIVERED: "Đã giao hàng",
+  CANCELLED: "Đã hủy",
+};
+
+const paymentMethodLabels = {
+  COD: "Thanh toán khi nhận hàng (COD)",
+  ZALOPAY: "ZaloPay",
+  VNPAY: "VNPay",
+  MOMO: "MoMo",
+};
 
 const getErrorMessage = (error, fallback) =>
   error?.data?.message || error?.error || fallback;
@@ -61,10 +77,10 @@ const ManageOrders = () => {
         status: selectedStatus,
       }).unwrap();
       closeStatusModal();
-      setMessage("Order status updated successfully.");
+      setMessage("Cập nhật trạng thái đơn hàng thành công.");
     } catch (requestError) {
       setErrorMessage(
-        getErrorMessage(requestError, "Unable to update the order status.")
+        getErrorMessage(requestError, "Không thể cập nhật trạng thái đơn hàng.")
       );
     }
   };
@@ -73,7 +89,7 @@ const ManageOrders = () => {
   if (isError) {
     return (
       <div className="rounded-md bg-red-50 p-4 text-red-700">
-        {getErrorMessage(error, "Unable to load orders.")}
+        {getErrorMessage(error, "Không thể tải đơn hàng.")}
       </div>
     );
   }
@@ -84,16 +100,16 @@ const ManageOrders = () => {
       {errorMessage && <p className="mb-4 text-sm text-red-700">{errorMessage}</p>}
       <ListTable
         columns={[
-          { label: "Order ID" },
-          { label: "Customer" },
-          { label: "Phone" },
-          { label: "Total" },
-          { label: "Payment" },
-          { label: "Status" },
-          { label: "Created" },
-          { label: "Actions", className: "dashboard-table-actions" },
+          { label: "Mã đơn hàng" },
+          { label: "Khách hàng" },
+          { label: "Điện thoại" },
+          { label: "Tổng tiền" },
+          { label: "Thanh toán" },
+          { label: "Trạng thái" },
+          { label: "Ngày tạo" },
+          { label: "Thao tác", className: "dashboard-table-actions" },
         ]}
-        emptyMessage="No orders have been placed."
+        emptyMessage="Chưa có đơn hàng."
       >
         {orders.length > 0 &&
           orders.map((order) => (
@@ -101,15 +117,15 @@ const ManageOrders = () => {
               <td className="font-medium">#{order.orderId}</td>
               <td>{order.recipientName}</td>
               <td>{order.recipientPhone}</td>
-              <td>${order.totalAmount}</td>
-              <td>{order.paymentMethod}</td>
+              <td>{formatVND(order.totalAmount)}</td>
+              <td>{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</td>
               <td>
                 <span
                   className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
                     statusClasses[order.orderStatus] || "bg-gray-100 text-gray-800"
                   }`}
                 >
-                  {order.orderStatus}
+                  {orderStatusLabels[order.orderStatus] || order.orderStatus}
                 </span>
               </td>
               <td>
@@ -123,7 +139,7 @@ const ManageOrders = () => {
                   onClick={() => openStatusModal(order)}
                   className="font-medium text-indigo-600 hover:text-indigo-500"
                 >
-                  Edit Status
+                  Sửa trạng thái
                 </button>
               </td>
             </tr>
@@ -133,7 +149,7 @@ const ManageOrders = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-800">Edit Order Status</h2>
+              <h2 className="text-2xl font-bold text-gray-800">Sửa trạng thái đơn hàng</h2>
               <button
                 type="button"
                 onClick={closeStatusModal}
@@ -143,7 +159,7 @@ const ManageOrders = () => {
               </button>
             </div>
             <p className="mb-4 text-sm text-gray-600">
-              Update the status for order #{selectedOrder.orderId}.
+              Cập nhật trạng thái cho đơn hàng #{selectedOrder.orderId}.
             </p>
             <form onSubmit={handleStatusChange} className="space-y-5">
               <select
@@ -153,19 +169,19 @@ const ManageOrders = () => {
                 className="w-full rounded-md border p-2"
               >
                 {orderStatuses.map((status) => (
-                  <option key={status} value={status}>{status}</option>
+                  <option key={status} value={status}>{orderStatusLabels[status]}</option>
                 ))}
               </select>
               <div className="flex justify-end gap-3">
                 <button type="button" onClick={closeStatusModal} className="rounded-md border px-4 py-2">
-                  Cancel
+                  Hủy
                 </button>
                 <button
                   type="submit"
                   disabled={isUpdating}
                   className="rounded-md bg-purple-600 px-4 py-2 font-semibold text-white disabled:bg-purple-300"
                 >
-                  {isUpdating ? "Saving..." : "Save Status"}
+                  {isUpdating ? "Đang lưu..." : "Lưu trạng thái"}
                 </button>
               </div>
             </form>

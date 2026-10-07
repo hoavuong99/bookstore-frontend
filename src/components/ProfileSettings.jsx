@@ -33,9 +33,9 @@ const ProfileSettings = ({ showProfile = true, showPassword = true }) => {
     try {
       const updatedProfile = await updateProfile(profileForm).unwrap();
       updateCurrentUser(updatedProfile);
-      setMessage("Profile updated successfully.");
+      setMessage("Cập nhật hồ sơ thành công.");
     } catch (error) {
-      setErrorMessage(error?.data?.message || "Unable to update your profile.");
+      setErrorMessage(error?.data?.message || "Không thể cập nhật hồ sơ.");
     }
   };
 
@@ -46,9 +46,9 @@ const ProfileSettings = ({ showProfile = true, showPassword = true }) => {
     try {
       await changePassword(passwordForm).unwrap();
       setPasswordForm({ currentPassword: "", newPassword: "" });
-      setMessage("Password changed successfully.");
+      setMessage("Đổi mật khẩu thành công.");
     } catch (error) {
-      setErrorMessage(error?.data?.message || "Unable to change your password.");
+      setErrorMessage(error?.data?.message || "Không thể đổi mật khẩu.");
     }
   };
 
@@ -56,36 +56,36 @@ const ProfileSettings = ({ showProfile = true, showPassword = true }) => {
     <div className={`grid gap-6 ${showProfile && showPassword ? "md:grid-cols-2" : "max-w-xl"}`}>
       {showProfile && (
         <form onSubmit={handleProfileSubmit} className="rounded-lg bg-white p-6 shadow">
-          <h2 className="mb-5 text-2xl font-semibold">Update Profile</h2>
-          <label className="mb-1 block text-sm font-medium">Full name</label>
+          <h2 className="mb-5 text-2xl font-semibold">Cập nhật hồ sơ</h2>
+          <label className="mb-1 block text-sm font-medium">Họ và tên</label>
           <input
             required
             value={profileForm.fullName}
             onChange={(event) => setProfileForm({ ...profileForm, fullName: event.target.value })}
             className="mb-4 w-full rounded-md border p-2"
           />
-          <label className="mb-1 block text-sm font-medium">Phone</label>
+          <label className="mb-1 block text-sm font-medium">Điện thoại</label>
           <input
             value={profileForm.phone}
             onChange={(event) => setProfileForm({ ...profileForm, phone: event.target.value })}
             className="mb-4 w-full rounded-md border p-2"
           />
-          <label className="mb-1 block text-sm font-medium">Address</label>
+          <label className="mb-1 block text-sm font-medium">Địa chỉ</label>
           <textarea
             value={profileForm.address}
             onChange={(event) => setProfileForm({ ...profileForm, address: event.target.value })}
             className="mb-5 w-full rounded-md border p-2"
           />
           <button disabled={isUpdatingProfile} className="rounded-md bg-purple-600 px-4 py-2 font-semibold text-white disabled:opacity-50">
-            {isUpdatingProfile ? "Saving..." : "Save Profile"}
+            {isUpdatingProfile ? "Đang lưu..." : "Lưu hồ sơ"}
           </button>
         </form>
       )}
 
       {showPassword && (
         <form onSubmit={handlePasswordSubmit} className="rounded-lg bg-white p-6 shadow">
-          <h2 className="mb-5 text-2xl font-semibold">Change Password</h2>
-          <label className="mb-1 block text-sm font-medium">Current password</label>
+          <h2 className="mb-5 text-2xl font-semibold">Đổi mật khẩu</h2>
+          <label className="mb-1 block text-sm font-medium">Mật khẩu hiện tại</label>
           <input
             type="password"
             required
@@ -93,7 +93,7 @@ const ProfileSettings = ({ showProfile = true, showPassword = true }) => {
             onChange={(event) => setPasswordForm({ ...passwordForm, currentPassword: event.target.value })}
             className="mb-4 w-full rounded-md border p-2"
           />
-          <label className="mb-1 block text-sm font-medium">New password</label>
+          <label className="mb-1 block text-sm font-medium">Mật khẩu mới</label>
           <input
             type="password"
             required
@@ -103,7 +103,7 @@ const ProfileSettings = ({ showProfile = true, showPassword = true }) => {
             className="mb-5 w-full rounded-md border p-2"
           />
           <button disabled={isChangingPassword} className="rounded-md bg-blue-600 px-4 py-2 font-semibold text-white disabled:opacity-50">
-            {isChangingPassword ? "Changing..." : "Change Password"}
+            {isChangingPassword ? "Đang đổi..." : "Đổi mật khẩu"}
           </button>
         </form>
       )}

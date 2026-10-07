@@ -1,88 +1,92 @@
 import { Link } from "react-router-dom";
-import footerLogo from "../assets/footer-logo.png";
-
-import { FaFacebook, FaGithub, FaInstagram } from "react-icons/fa";
+import PropTypes from "prop-types";
+import { HiOutlineBookOpen } from "react-icons/hi2";
+import {
+  FaCcAmex,
+  FaCcMastercard,
+  FaCcVisa,
+  FaFacebookF,
+  FaInstagram,
+  FaPaypal,
+  FaTwitter,
+} from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-white py-10 px-4">
-      {/* Top Section */}
-      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-        {/* Left Side - Logo and Nav */}
-        <div className="md:w-1/2 w-full">
-          <img src={footerLogo} alt="Logo" className="mb-5 w-36" />
-          <ul className="flex flex-col md:flex-row gap-4">
-            <li>
-              <Link to='/' className="hover:text-primary">
-                Home
-              </Link>
-            </li>
-            <li>
-              <a href="#services" className="hover:text-primary">
-                Services
-              </a>
-            </li>
-            <li>
-              <a href="#about" className="hover:text-primary">
-                About Us
-              </a>
-            </li>
-            <li>
-              <a href="#contact" className="hover:text-primary">
-                Contact
-              </a>
-            </li>
-          </ul>
+    <footer className="bg-black px-6 py-16 text-sm text-stone-400 sm:px-8 lg:py-20">
+      <div className="mx-auto max-w-screen-xl">
+        <div className="grid gap-12 border-b border-stone-800 pb-14 sm:grid-cols-2 lg:grid-cols-[1.5fr_repeat(3,1fr)]">
+          <div>
+            <Link to="/" className="flex items-center gap-2 text-xl font-bold text-white">
+              <span className="flex size-8 items-center justify-center bg-amber-400 text-stone-950">
+                <HiOutlineBookOpen className="size-5" />
+              </span>
+              Book Works
+            </Link>
+            <p className="mt-5 max-w-64 leading-6">
+              Điểm đến yêu thích cho sách, cộng đồng đọc và những khám phá văn học.
+            </p>
+          </div>
+
+          <FooterColumn title="Liên kết nhanh">
+            <Link to="/">Trang chủ</Link>
+            <Link to="/books">Tất cả sách</Link>
+            <a href="/#categories">Thể loại</a>
+            <Link to="/cart">Giỏ hàng</Link>
+          </FooterColumn>
+
+          <FooterColumn title="Khám phá">
+            <a href="/#new-arrivals">Sách mới</a>
+            <a href="/#best-sellers">Sách bán chạy</a>
+            <a href="/#editors-picks">Lựa chọn biên tập</a>
+            <Link to="/books">Xem danh mục</Link>
+          </FooterColumn>
+
+          <FooterColumn title="Hỗ trợ">
+            <Link to="/orders">Theo dõi đơn hàng</Link>
+            <Link to="/user-dashboard/profile">Tài khoản</Link>
+            <Link to="/cart">Giỏ hàng</Link>
+            <Link to="/login">Đăng nhập</Link>
+          </FooterColumn>
         </div>
 
-      </div>
-
-      {/* Bottom Section */}
-      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center mt-10 border-t border-gray-700 pt-6">
-        {/* Left Side - Privacy Links */}
-        <ul className="flex gap-6 mb-4 md:mb-0">
-          <li>
-            <a href="#privacy" className="hover:text-primary">
-              Privacy Policy
+        <div className="flex flex-col gap-7 pt-8 text-xs sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} Book Works. Bảo lưu mọi quyền.</p>
+          <div className="flex items-center gap-3 text-xl text-white" aria-label="Accepted payment methods">
+            <FaCcMastercard aria-label="Mastercard" />
+            <FaCcVisa aria-label="Visa" />
+            <FaCcAmex aria-label="American Express" />
+            <FaPaypal aria-label="PayPal" />
+          </div>
+          <div className="flex items-center gap-5 text-base text-stone-400">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="transition hover:text-white">
+              <FaFacebookF />
             </a>
-          </li>
-          <li>
-            <a href="#terms" className="hover:text-primary">
-              Terms of Service
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="transition hover:text-white">
+              <FaTwitter />
             </a>
-          </li>
-        </ul>
-
-        {/* Right Side - Social Icons */}
-        <div className="flex gap-6">
-          <a
-            href="https://facebook.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-primary"
-          >
-            <FaFacebook size={24} />
-          </a>
-          <a
-            href="https://twitter.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-primary"
-          >
-            <FaGithub size={24} />
-          </a>
-          <a
-            href="https://instagram.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-primary"
-          >
-            <FaInstagram size={24} />
-          </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="transition hover:text-white">
+              <FaInstagram />
+            </a>
+          </div>
         </div>
       </div>
     </footer>
   );
+};
+
+const FooterColumn = ({ title, children }) => (
+  <div>
+    <h2 className="mb-5 font-semibold text-white">{title}</h2>
+    <div className="flex flex-col gap-3">
+      {children}
+    </div>
+  </div>
+);
+
+FooterColumn.propTypes = {
+  title: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
 };
 
 export default Footer;

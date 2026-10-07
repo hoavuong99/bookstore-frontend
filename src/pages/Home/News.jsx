@@ -15,37 +15,37 @@ import { Link } from "react-router-dom";
 const news = [
   {
     id: 1,
-    title: "Global Climate Summit Calls for Urgent Action",
+    title: "Hội nghị khí hậu toàn cầu kêu gọi hành động khẩn cấp",
     description:
-      "World leaders gather at the Global Climate Summit to discuss urgent strategies to combat climate change, focusing on reducing carbon emissions and fostering renewable energy solutions.",
+      "Các nhà lãnh đạo thế giới tập trung tại Hội nghị Khí hậu Toàn cầu để thảo luận các chiến lược cấp thiết nhằm chống biến đổi khí hậu, giảm phát thải carbon và thúc đẩy năng lượng tái tạo.",
     image: news1,
   },
   {
     id: 2,
-    title: "Breakthrough in AI Technology Announced",
+    title: "Công bố đột phá mới trong công nghệ AI",
     description:
-      "A major breakthrough in artificial intelligence has been announced by researchers, with new advancements promising to revolutionize industries from healthcare to finance.",
+      "Các nhà nghiên cứu công bố một bước đột phá lớn trong trí tuệ nhân tạo, hứa hẹn tạo ra thay đổi cho nhiều lĩnh vực từ y tế đến tài chính.",
     image: news2,
   },
   {
     id: 3,
-    title: "New Space Mission Aims to Explore Distant Galaxies",
+    title: "Sứ mệnh không gian mới khám phá các thiên hà xa",
     description:
-      "NASA has unveiled plans for a new space mission that will aim to explore distant galaxies, with hopes of uncovering insights into the origins of the universe.",
+      "NASA công bố kế hoạch cho sứ mệnh không gian mới nhằm khám phá các thiên hà xa xôi và tìm hiểu nguồn gốc của vũ trụ.",
     image: news3,
   },
   {
     id: 4,
-    title: "Stock Markets Reach Record Highs Amid Economic Recovery",
+    title: "Thị trường chứng khoán đạt mức cao kỷ lục",
     description:
-      "Global stock markets have reached record highs as signs of economic recovery continue to emerge following the challenges posed by the global pandemic.",
+      "Thị trường chứng khoán toàn cầu đạt mức cao kỷ lục khi các dấu hiệu phục hồi kinh tế tiếp tục xuất hiện sau những thách thức của đại dịch.",
     image: news4,
   },
   {
     id: 5,
-    title: "Innovative New Smartphone Released by Leading Tech Company",
+    title: "Công ty công nghệ hàng đầu ra mắt điện thoại mới",
     description:
-      "A leading tech company has released its latest smartphone model, featuring cutting-edge technology, improved battery life, and a sleek new design.",
+      "Một công ty công nghệ hàng đầu ra mắt mẫu điện thoại mới với công nghệ tiên tiến, thời lượng pin được cải thiện và thiết kế hiện đại.",
     image: news2,
   },
 ];
@@ -53,7 +53,7 @@ const news = [
 const News = () => {
   return (
     <div className="py-16">
-      <h2 className="text-3xl font-semibold mb-6">News </h2>
+      <h2 className="text-3xl font-semibold mb-6">Tin tức</h2>
 
       <Swiper
         slidesPerView={1}

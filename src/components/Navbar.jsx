@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import {
-  HiHome,
-  HiOutlineHeart,
+  HiOutlineBookOpen,
   HiOutlineShoppingCart,
 } from "react-icons/hi2";
 import { HiOutlineUser } from "react-icons/hi";
@@ -12,11 +11,11 @@ import { useAuth } from "../context/AuthContext";
 import { useGetCartQuery } from "../redux/features/books/booksApi";
 
 const navigation = [
-  { name: "My Profile", href: "/user-dashboard/profile" },
-  { name: "Change Password", href: "/user-dashboard/change-password" },
-  { name: "Orders", href: "/orders" },
-  { name: "Cart", href: "/cart" },
-  { name: "Check Out", href: "/checkout" },
+  { name: "Hồ sơ", href: "/user-dashboard/profile" },
+  { name: "Đổi mật khẩu", href: "/user-dashboard/change-password" },
+  { name: "Đơn hàng", href: "/orders" },
+  { name: "Giỏ hàng", href: "/cart" },
+  { name: "Thanh toán", href: "/checkout" },
 ];
 
 const Navbar = () => {
@@ -30,18 +29,25 @@ const Navbar = () => {
   };
 
   return (
-    <header className="max-w-screen-2xl mx-auto px-4 py-6">
-      <nav className="flex justify-between items-center">
-        {/* left side */}
-        <div className="flex items-center md:gap-16 gap-4">
-          <Link to="/">
-            <HiHome className="size-6" />
+    <header className="sticky top-0 z-30 border-b border-purple-100 bg-white/95 px-4 py-4 backdrop-blur">
+      <nav className="mx-auto flex max-w-screen-2xl items-center justify-between">
+        <div className="flex items-center gap-6">
+          <Link to="/" className="flex items-center gap-2 text-xl font-bold text-stone-900">
+            <span className="flex size-9 items-center justify-center rounded-sm bg-amber-400 text-stone-900">
+              <HiOutlineBookOpen className="size-5" />
+            </span>
+            <span>Book Works</span>
           </Link>
-
+          <div className="hidden items-center gap-7 text-sm font-semibold uppercase tracking-wide text-stone-800 lg:flex">
+            <Link to="/books" className="hover:text-amber-600">Tất cả sách</Link>
+            <a href="/#new-arrivals" className="hover:text-amber-600">Sách mới</a>
+            <a href="/#best-sellers" className="hover:text-amber-600">Bán chạy</a>
+            <a href="/#editors-picks" className="hover:text-amber-600">Lựa chọn biên tập</a>
+            <a href="/#categories" className="hover:text-amber-600">Thể loại</a>
+          </div>
         </div>
 
-        {/* rigth side */}
-        <div className="relative flex items-center md:space-x-3 space-x-2">
+        <div className="relative flex items-center space-x-2 md:space-x-3">
           <div>
             {currentUser ? (
               <>
@@ -76,7 +82,7 @@ const Navbar = () => {
                           onClick={handleLogOut}
                           className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
                         >
-                          Logout
+                          Đăng xuất
                         </button>
                       </li>
                     </ul>
@@ -91,13 +97,9 @@ const Navbar = () => {
             )}
           </div>
 
-          <button className="hidden sm:block">
-            <HiOutlineHeart className="size-6" />
-          </button>
-
           <Link
             to="/cart"
-            className="bg-primary p-1 sm:px-6 px-2 flex items-center rounded-sm"
+            className="flex items-center rounded-sm bg-stone-900 p-2 text-white shadow-sm transition hover:bg-stone-700 sm:px-4"
           >
             <HiOutlineShoppingCart className="" />
             {cartItemCount > 0 ? (

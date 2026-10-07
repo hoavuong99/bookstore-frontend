@@ -8,8 +8,8 @@ const confirmAction = async (title, text) => {
     showCancelButton: true,
     confirmButtonColor: "#dc2626",
     cancelButtonColor: "#6b7280",
-    confirmButtonText: "Confirm",
-    cancelButtonText: "Cancel",
+    confirmButtonText: "Xác nhận",
+    cancelButtonText: "Hủy",
     reverseButtons: true,
   });
 
@@ -17,4 +17,3 @@ const confirmAction = async (title, text) => {
 };
 
 export default confirmAction;
-

@@ -13,8 +13,10 @@ export default {
         'favorite' : '#FF5841'
       },
       fontFamily:{
-        'primary':["montserrat", "serif"],
-        'secondary':["Nunito Sans", "serif"]
+        'sans':["Be Vietnam Pro", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+        'serif':["Playfair Display", "Georgia", "serif"],
+        'primary':["Be Vietnam Pro", "sans-serif"],
+        'secondary':["Be Vietnam Pro", "sans-serif"]
       }
     },
   },

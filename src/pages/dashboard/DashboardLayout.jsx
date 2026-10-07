@@ -14,18 +14,18 @@ const DashboardLayout = () => {
   const isProfileActive = location.pathname === "/dashboard/profile";
   const pageTitle =
     location.pathname === "/dashboard/manage-books"
-      ? "Books"
+      ? "Sách"
       : location.pathname === "/dashboard/categories"
-        ? "Categories"
+        ? "Thể loại"
         : location.pathname === "/dashboard/orders"
-          ? "Orders"
+          ? "Đơn hàng"
           : location.pathname === "/dashboard/users"
-            ? "Users"
+            ? "Người dùng"
           : location.pathname === "/dashboard/profile"
-            ? "Profile"
+            ? "Hồ sơ"
           : location.pathname === "/dashboard/change-password"
-            ? "Change Password"
-        : "Dashboard";
+            ? "Đổi mật khẩu"
+        : "Tổng quan";
   const userName =
     currentUser?.fullName || currentUser?.displayName || currentUser?.email;
   const userInitials = userName
@@ -59,7 +59,7 @@ const DashboardLayout = () => {
                   : "hover:bg-gray-700 hover:text-gray-400 focus:bg-gray-700 focus:text-gray-400"
               }`}
             >
-              <span className="sr-only">Dashboard</span>
+              <span className="sr-only">Tổng quan</span>
               <svg
                 aria-hidden="true"
                 fill="none"
@@ -74,7 +74,7 @@ const DashboardLayout = () => {
                   d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                 />
               </svg>
-              <span>Dashboard</span>
+              <span>Tổng quan</span>
             </Link>
             <Link
               to="/dashboard/manage-books"
@@ -84,9 +84,9 @@ const DashboardLayout = () => {
                   : "hover:bg-gray-700 hover:text-gray-400 focus:bg-gray-700 focus:text-gray-400"
               }`}
             >
-              <span className="sr-only">Books</span>
+              <span className="sr-only">Sách</span>
               <MdBook className="h-6 w-6" />
-              <span>Books</span>
+              <span>Sách</span>
             </Link>
             <Link
               to="/dashboard/categories"
@@ -96,9 +96,9 @@ const DashboardLayout = () => {
                   : "hover:bg-gray-700 hover:text-gray-400 focus:bg-gray-700 focus:text-gray-400"
               }`}
             >
-              <span className="sr-only">Manage Categories</span>
+              <span className="sr-only">Quản lý thể loại</span>
               <MdCategory className="h-6 w-6" />
-              <span>Categories</span>
+              <span>Thể loại</span>
             </Link>
             <Link
               to="/dashboard/orders"
@@ -110,7 +110,7 @@ const DashboardLayout = () => {
             >
               <span className="sr-only">Orders</span>
               <MdReceiptLong className="h-6 w-6" />
-              <span>Orders</span>
+              <span>Đơn hàng</span>
             </Link>
             <Link
               to="/dashboard/users"
@@ -120,14 +120,14 @@ const DashboardLayout = () => {
                   : "hover:bg-gray-700 hover:text-gray-400 focus:bg-gray-700 focus:text-gray-400"
               }`}
             >
-              <span className="sr-only">Users</span>
+              <span className="sr-only">Người dùng</span>
               <MdPeople className="h-6 w-6" />
-              <span>Users</span>
+              <span>Người dùng</span>
             </Link>
           </nav>
           <div className="inline-flex h-20 items-center border-t border-gray-700 px-4">
             <button className="inline-flex items-center gap-3 rounded-lg p-3 hover:bg-gray-700 hover:text-gray-400 focus:bg-gray-700 focus:text-gray-400">
-              <span className="sr-only">Settings</span>
+              <span className="sr-only">Cài đặt</span>
               <svg
                 aria-hidden="true"
                 fill="none"
@@ -174,7 +174,7 @@ const DashboardLayout = () => {
           <div className="flex flex-shrink-0 items-center ml-auto">
             <details className="relative">
               <summary className="inline-flex cursor-pointer list-none items-center rounded-lg p-2 hover:bg-gray-100 focus:bg-gray-100">
-              <span className="sr-only">User Menu</span>
+              <span className="sr-only">Menu người dùng</span>
               <div className="hidden md:flex md:flex-col md:items-end md:leading-tight">
                 <span className="font-semibold">{userName}</span>
                 <span className="text-sm text-gray-600">{currentUser?.email}</span>
@@ -202,19 +202,19 @@ const DashboardLayout = () => {
                     isProfileActive ? "bg-purple-50 text-purple-700" : "hover:bg-gray-100"
                   }`}
                 >
-                  Update Profile
+                  Cập nhật hồ sơ
                 </Link>
                 <Link
                   to="/dashboard/change-password"
                   className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
                 >
-                  Change Password
+                  Đổi mật khẩu
                 </Link>
                 <button
                   onClick={handleLogout}
                   className="block w-full rounded px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
                 >
-                  Logout
+                  Đăng xuất
                 </button>
               </div>
             </details>

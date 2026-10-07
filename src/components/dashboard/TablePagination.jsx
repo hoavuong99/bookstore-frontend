@@ -11,12 +11,12 @@ const TablePagination = ({ page, pageSize, totalPages, onPageChange, onPageSizeC
         onClick={() => onPageChange(page - 1)}
         className="rounded-md border px-4 py-2 disabled:opacity-40"
       >
-        Back
+        Trang trước
       </button>
       <div className="flex items-center gap-4">
-        <span className="text-sm text-gray-600">Page {page + 1} of {totalPages}</span>
+        <span className="text-sm text-gray-600">Trang {page + 1} / {totalPages}</span>
         <label className="flex items-center gap-2 text-sm text-gray-600">
-          Items per page
+          Số mục mỗi trang
           <select
             value={pageSize}
             onChange={(event) => onPageSizeChange(Number(event.target.value))}
@@ -34,7 +34,7 @@ const TablePagination = ({ page, pageSize, totalPages, onPageChange, onPageSizeC
         onClick={() => onPageChange(page + 1)}
         className="rounded-md border px-4 py-2 disabled:opacity-40"
       >
-        Next
+        Trang sau
       </button>
     </div>
   );

@@ -10,10 +10,10 @@ const RevenueChart = ({ totalRevenue = 0 }) => {
   const revenueData = [totalRevenue];
 
   const data = {
-    labels: ['Completed orders'],
+    labels: ['Đơn hàng hoàn tất'],
     datasets: [
       {
-        label: 'Revenue (USD)',
+        label: 'Doanh thu (VND)',
         data: revenueData,
         backgroundColor: 'rgba(34, 197, 94, 0.7)', 
         borderColor: 'rgba(34, 197, 94, 1)',
@@ -30,7 +30,7 @@ const RevenueChart = ({ totalRevenue = 0 }) => {
       },
       title: {
         display: true,
-        text: 'Completed Order Revenue',
+        text: 'Doanh thu từ đơn hàng hoàn tất',
       },
     },
     scales: {
@@ -42,7 +42,7 @@ const RevenueChart = ({ totalRevenue = 0 }) => {
 
   return (
     <div className="w-full max-w-3xl mx-auto p-4 bg-white shadow-lg rounded-lg">
-      <h2 className="text-center text-2xl font-bold text-gray-800 mb-4">Completed Order Revenue</h2>
+      <h2 className="text-center text-2xl font-bold text-gray-800 mb-4">Doanh thu từ đơn hàng hoàn tất</h2>
       <div className='hidden md:block'>
       <Bar data={data} options={options} className='' />
       </div>

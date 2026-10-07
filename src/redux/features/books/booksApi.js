@@ -19,6 +19,9 @@ const normalizeBook = (book) => ({
     oldPrice: Number(book?.price || 0),
     coverImage: book?.imageUrl || '',
     description: book?.description || `ISBN: ${book?.isbn || ''}`,
+    authorName: book?.authorName || "Chưa cập nhật tác giả",
+    rating: Number(book?.rating || 0),
+    editorsPick: Boolean(book?.editorsPick),
     categoryIds: Array.isArray(book?.categoryIds) ? book.categoryIds : [],
     categoryNames: Array.isArray(book?.categoryNames) ? book.categoryNames : [],
     category: Array.isArray(book?.categoryNames) ? book.categoryNames.join(', ') : '',
@@ -66,10 +69,10 @@ const booksApi = createApi({
             invalidatesTags: ["Categories"],
         }),
         updateCategory: builder.mutation({
-            query: ({ id, ...category }) => ({
+            query: ({ id, body, ...category }) => ({
                 url: `/categories/${id}`,
                 method: "PUT",
-                body: category,
+                body: body || category,
             }),
             invalidatesTags: ["Books", "Categories"],
         }),
@@ -89,13 +92,34 @@ const booksApi = createApi({
             providesTags: ["Books"]
         }),
         fetchBooksPage: builder.query({
-            query: ({ page = 0, size = 10, search = "" } = {}) =>
-                `/books?page=${page}&size=${size}${search ? `&search=${encodeURIComponent(search)}` : ""}`,
+            query: ({ page = 0, size = 10, search = "", categoryId = "", maxPrice = "" } = {}) => {
+                const params = new URLSearchParams({ page, size });
+                if (search) params.set("search", search);
+                if (categoryId) params.set("categoryId", categoryId);
+                if (maxPrice) params.set("maxPrice", maxPrice);
+                return `/books?${params.toString()}`;
+            },
             transformResponse: normalizeBookPage,
             providesTags: ["Books"],
         }),
         fetchBestSellers: builder.query({
             query: ({ size = 10 } = {}) => `/books/best-sellers?size=${size}`,
+            transformResponse: (response) => {
+                const data = unwrapApiResponse(response);
+                return Array.isArray(data) ? data.map(normalizeBook) : [];
+            },
+            providesTags: ["Books"],
+        }),
+        fetchNewArrivals: builder.query({
+            query: ({ size = 5 } = {}) => `/books/new-arrivals?size=${size}`,
+            transformResponse: (response) => {
+                const data = unwrapApiResponse(response);
+                return Array.isArray(data) ? data.map(normalizeBook) : [];
+            },
+            providesTags: ["Books"],
+        }),
+        fetchEditorsPicks: builder.query({
+            query: ({ size = 4 } = {}) => `/books/editors-picks?size=${size}`,
             transformResponse: (response) => {
                 const data = unwrapApiResponse(response);
                 return Array.isArray(data) ? data.map(normalizeBook) : [];
@@ -116,13 +140,10 @@ const booksApi = createApi({
             invalidatesTags: ["Books"]
         }),
         updateBook: builder.mutation({
-            query: ({id, ...rest}) => ({
+            query: ({ id, body, ...rest }) => ({
                 url: `/books/${id}`,
                 method: "PUT",
-                body: rest,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                body: body || rest,
             }),
             invalidatesTags: ["Books"]
         }),
@@ -175,6 +196,8 @@ export const {
     useFetchAllBooksQuery,
     useFetchBooksPageQuery,
     useFetchBestSellersQuery,
+    useFetchNewArrivalsQuery,
+    useFetchEditorsPicksQuery,
     useFetchBookByIdQuery,
     useAddBookMutation,
     useUpdateBookMutation,

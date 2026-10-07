@@ -12,15 +12,19 @@ import Loading from "../../../components/Loading";
 import ListTable from "../../../components/dashboard/ListTable";
 import TablePagination from "../../../components/dashboard/TablePagination";
 import confirmAction from "../../../utils/confirmAction";
+import { formatVND } from "../../../utils/currency";
 
 const emptyBook = {
   title: "",
+  authorName: "",
   isbn: "",
   price: "",
   stockQuantity: "",
   categoryIds: [],
   description: "",
   imageUrl: "",
+  rating: "",
+  editorsPick: false,
 };
 
 const getErrorMessage = (error, fallback) =>
@@ -33,11 +37,14 @@ const BookFormModal = ({ book, onClose, onSaved }) => {
   const [addBook, { isLoading: isAdding }] = useAddBookMutation();
   const [updateBook, { isLoading: isUpdating }] = useUpdateBookMutation();
   const [imageFile, setImageFile] = useState(null);
+  const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: book
@@ -49,6 +56,10 @@ const BookFormModal = ({ book, onClose, onSaved }) => {
   });
 
   const isSaving = isAdding || isUpdating;
+  const selectedCategoryIds = watch("categoryIds") || [];
+  const selectedCategoryNames = categories
+    .filter((category) => selectedCategoryIds.includes(String(category.id)))
+    .map((category) => category.name);
 
   useEffect(() => {
     reset(
@@ -67,38 +78,37 @@ const BookFormModal = ({ book, onClose, onSaved }) => {
     setErrorMessage("");
     const payload = {
       title: data.title.trim(),
+      authorName: data.authorName?.trim() || null,
       isbn: data.isbn.trim(),
       price: Number(data.price),
       stockQuantity: Number(data.stockQuantity),
       categoryIds: data.categoryIds.map(Number),
       description: data.description?.trim() || "",
       imageUrl: data.imageUrl?.trim() || null,
+      rating: data.rating === "" ? null : Number(data.rating),
+      editorsPick: Boolean(data.editorsPick),
     };
 
     try {
-      if (isEditing) {
-        await updateBook({ id: book.id, ...payload }).unwrap();
-      } else {
-        let requestBody = payload;
-        if (imageFile) {
-          const formData = new FormData();
-          formData.append("title", payload.title);
-          formData.append("isbn", payload.isbn);
-          formData.append("price", String(payload.price));
-          formData.append("stockQuantity", String(payload.stockQuantity));
-          payload.categoryIds.forEach((categoryId) =>
-            formData.append("categoryIds", String(categoryId))
-          );
-          formData.append("description", payload.description);
-          formData.append("image", imageFile);
-          requestBody = formData;
-        }
-        await addBook(requestBody).unwrap();
+      let requestBody = payload;
+      if (imageFile) {
+        const formData = new FormData();
+        Object.entries(payload).forEach(([key, value]) => {
+          if (key === "categoryIds") {
+            value.forEach((categoryId) => formData.append(key, String(categoryId)));
+          } else if (value !== null && value !== undefined) {
+            formData.append(key, String(value));
+          }
+        });
+        formData.append("image", imageFile);
+        requestBody = formData;
       }
-      onSaved(isEditing ? "Book updated successfully." : "Book created successfully.");
+      if (isEditing) await updateBook({ id: book.id, body: requestBody }).unwrap();
+      else await addBook(requestBody).unwrap();
+      onSaved(isEditing ? "Cập nhật sách thành công." : "Tạo sách thành công.");
     } catch (error) {
       setErrorMessage(
-        getErrorMessage(error, isEditing ? "Unable to update the book." : "Unable to create the book.")
+        getErrorMessage(error, isEditing ? "Không thể cập nhật sách." : "Không thể tạo sách.")
       );
     }
   };
@@ -108,7 +118,7 @@ const BookFormModal = ({ book, onClose, onSaved }) => {
       <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-6 shadow-xl">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-800">
-            {isEditing ? "Edit Book" : "Add New Book"}
+            {isEditing ? "Chỉnh sửa sách" : "Thêm sách mới"}
           </h2>
           <button type="button" onClick={onClose} className="text-2xl text-gray-500 hover:text-gray-800">
             &times;
@@ -117,10 +127,12 @@ const BookFormModal = ({ book, onClose, onSaved }) => {
         {errorMessage && <p className="mb-4 text-sm text-red-700">{errorMessage}</p>}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {[
-            ["title", "Title", "text"],
+            ["title", "Tên sách", "text"],
+            ["authorName", "Tác giả", "text"],
             ["isbn", "ISBN", "text"],
-            ["price", "Price", "number"],
-            ["stockQuantity", "Stock Quantity", "number"],
+            ["price", "Giá (nghìn đồng)", "number"],
+            ["stockQuantity", "Số lượng tồn kho", "number"],
+            ["rating", "Đánh giá (0-5)", "number"],
           ].map(([name, label, type]) => (
             <div key={name}>
               <label className="mb-1 block text-sm font-semibold text-gray-700" htmlFor={`book-${name}`}>
@@ -129,59 +141,96 @@ const BookFormModal = ({ book, onClose, onSaved }) => {
               <input
                 id={`book-${name}`}
                 type={type}
-                step={name === "price" ? "any" : undefined}
-                {...register(name, { required: true })}
+                step={["price", "rating"].includes(name) ? "any" : undefined}
+                {...register(name, { required: !["authorName", "rating"].includes(name) })}
                 className="w-full rounded-md border p-2 focus:border-blue-300 focus:outline-none focus:ring"
               />
-              {errors[name] && <p className="text-sm text-red-600">{label} is required.</p>}
+              {errors[name] && <p className="text-sm text-red-600">{label} là bắt buộc.</p>}
             </div>
           ))}
+          <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+            <input type="checkbox" {...register("editorsPick")} />
+            Lựa chọn biên tập
+          </label>
 
           <div>
             <label className="mb-1 block text-sm font-semibold text-gray-700" htmlFor="book-categoryIds">
-              Categories
+              Thể loại
             </label>
-            <select
-              id="book-categoryIds"
-              multiple
-              disabled={isLoadingCategories}
-              {...register("categoryIds", { required: true })}
-              className="min-h-24 w-full rounded-md border p-2 focus:border-blue-300 focus:outline-none focus:ring"
-            >
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>{category.name}</option>
-              ))}
-            </select>
-            {errors.categoryIds && <p className="text-sm text-red-600">Select at least one category.</p>}
+            <input type="hidden" {...register("categoryIds", { required: true })} />
+            <div className="relative">
+              <button
+                id="book-categoryIds"
+                type="button"
+                disabled={isLoadingCategories}
+                onClick={() => setIsCategoryMenuOpen((open) => !open)}
+                className="flex min-h-11 w-full items-center justify-between rounded-md border bg-white px-3 py-2 text-left focus:border-blue-300 focus:outline-none focus:ring"
+              >
+                <span className={selectedCategoryNames.length ? "text-gray-800" : "text-gray-400"}>
+                  {selectedCategoryNames.length
+                    ? `${selectedCategoryNames.length} đã chọn: ${selectedCategoryNames.join(", ")}`
+                    : "Chọn thể loại"}
+                </span>
+                <span className="ml-3 text-gray-500">{isCategoryMenuOpen ? "▴" : "▾"}</span>
+              </button>
+              {isCategoryMenuOpen && (
+                <div className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded-md border bg-white p-2 shadow-lg">
+                  {categories.length === 0 ? (
+                    <p className="px-2 py-1 text-sm text-gray-500">Chưa có thể loại.</p>
+                  ) : (
+                    categories.map((category) => {
+                      const categoryId = String(category.id);
+                      const isSelected = selectedCategoryIds.includes(categoryId);
+                      return (
+                        <label key={category.id} className="flex cursor-pointer items-center gap-2 rounded px-2 py-2 text-sm hover:bg-gray-50">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => {
+                              const nextCategoryIds = isSelected
+                                ? selectedCategoryIds.filter((id) => id !== categoryId)
+                                : [...selectedCategoryIds, categoryId];
+                              setValue("categoryIds", nextCategoryIds, { shouldValidate: true, shouldDirty: true });
+                            }}
+                            className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                          />
+                          <span>{category.name}</span>
+                        </label>
+                      );
+                    })
+                  )}
+                </div>
+              )}
+            </div>
+            {errors.categoryIds && <p className="text-sm text-red-600">Chọn ít nhất một thể loại.</p>}
           </div>
 
           <div>
             <label className="mb-1 block text-sm font-semibold text-gray-700" htmlFor="book-description">
-              Description
+              Mô tả
             </label>
             <textarea id="book-description" {...register("description")} className="min-h-24 w-full rounded-md border p-2" />
           </div>
 
           <div>
             <label className="mb-1 block text-sm font-semibold text-gray-700" htmlFor="book-imageUrl">
-              Image URL
+              URL hình ảnh
             </label>
             <input id="book-imageUrl" {...register("imageUrl")} className="w-full rounded-md border p-2" />
           </div>
 
-          {!isEditing && (
-            <div>
-              <label className="mb-1 block text-sm font-semibold text-gray-700" htmlFor="book-image">
-                Cover Image Upload
-              </label>
-              <input id="book-image" type="file" accept="image/*" onChange={(event) => setImageFile(event.target.files[0] || null)} />
-            </div>
-          )}
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-gray-700" htmlFor="book-image">
+              {isEditing ? "Thay ảnh bìa" : "Tải ảnh bìa lên"}
+            </label>
+            <input id="book-image" type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={(event) => setImageFile(event.target.files[0] || null)} />
+            <p className="mt-1 text-xs text-gray-500">Tối đa 5 MB. JPEG, PNG, WEBP hoặc GIF.</p>
+          </div>
 
           <div className="flex justify-end gap-3">
-            <button type="button" onClick={onClose} className="rounded-md border px-4 py-2">Cancel</button>
+            <button type="button" onClick={onClose} className="rounded-md border px-4 py-2">Hủy</button>
             <button type="submit" disabled={isSaving} className="rounded-md bg-purple-600 px-4 py-2 font-semibold text-white disabled:bg-purple-300">
-              {isSaving ? "Saving..." : isEditing ? "Update Book" : "Add Book"}
+              {isSaving ? "Đang lưu..." : isEditing ? "Cập nhật sách" : "Thêm sách"}
             </button>
           </div>
         </form>
@@ -208,51 +257,51 @@ const ManageBooks = () => {
   };
 
   const handleDelete = async (book) => {
-    if (!(await confirmAction("Delete book?", `Are you sure you want to delete "${book.title}"?`))) return;
+    if (!(await confirmAction("Xóa sách?", `Bạn có chắc muốn xóa "${book.title}" không?`))) return;
     setMessage("");
     setErrorMessage("");
     try {
       await deleteBook(book.id).unwrap();
-      setMessage("Book deleted successfully.");
+      setMessage("Xóa sách thành công.");
     } catch (requestError) {
-      setErrorMessage(getErrorMessage(requestError, "Unable to delete the book."));
+      setErrorMessage(getErrorMessage(requestError, "Không thể xóa sách."));
     }
   };
 
   if (isLoading) return <Loading />;
-  if (isError) return <div className="rounded-md bg-red-50 p-4 text-red-700">{getErrorMessage(error, "Unable to load books.")}</div>;
+  if (isError) return <div className="rounded-md bg-red-50 p-4 text-red-700">{getErrorMessage(error, "Không thể tải sách.")}</div>;
 
   return (
     <section className="dashboard-table-section">
       <div className="mb-6 flex items-center justify-between">
         <button onClick={() => { setMessage(""); setErrorMessage(""); setIsAdding(true); }} className="rounded-md bg-purple-600 px-4 py-2 font-semibold text-white hover:bg-purple-700">
-          Add New Book
+          Thêm sách mới
         </button>
       </div>
       {message && <p className="mb-4 text-sm text-green-700">{message}</p>}
       {errorMessage && <p className="mb-4 text-sm text-red-700">{errorMessage}</p>}
       <ListTable
         columns={[
-          { label: "Title" },
-          { label: "Categories" },
-          { label: "Price" },
-          { label: "Stock" },
-          { label: "Actions", className: "dashboard-table-actions" },
+          { label: "Tên sách" },
+          { label: "Thể loại" },
+          { label: "Giá" },
+          { label: "Tồn kho" },
+          { label: "Thao tác", className: "dashboard-table-actions" },
         ]}
-        emptyMessage="No books have been created."
+        emptyMessage="Chưa có sách nào."
       >
         {books.length > 0 &&
           books.map((book) => (
               <tr key={book.id}>
                 <td className="font-medium">{book.title}</td>
                 <td>{book.categoryNames.join(", ") || "—"}</td>
-                <td>${book.newPrice}</td>
+                <td>{formatVND(book.newPrice)}</td>
                 <td className={book.stockQuantity > 0 ? "text-green-600" : "text-red-600"}>
                   {book.stockQuantity ?? 0}
                 </td>
                 <td className="dashboard-table-actions space-x-3">
-                  <button onClick={() => { setMessage(""); setErrorMessage(""); setModalBook(book); }} className="font-medium text-indigo-600">Edit</button>
-                  <button onClick={() => handleDelete(book)} disabled={isDeleting} className="font-medium text-red-600 disabled:text-red-300">Delete</button>
+                  <button onClick={() => { setMessage(""); setErrorMessage(""); setModalBook(book); }} className="font-medium text-indigo-600">Sửa</button>
+                  <button onClick={() => handleDelete(book)} disabled={isDeleting} className="font-medium text-red-600 disabled:text-red-300">Xóa</button>
                 </td>
               </tr>
             ))}

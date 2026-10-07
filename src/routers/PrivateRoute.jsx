@@ -6,7 +6,7 @@ const PrivateRoute = ({children}) => {
     const {currentUser, loading} = useAuth();
 
     if(loading) {
-        return <div>Loading..</div>
+        return <div>Đang tải...</div>
     }
     if(currentUser) {
         return children;

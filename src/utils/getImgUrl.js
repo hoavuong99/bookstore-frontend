@@ -8,9 +8,9 @@ function getImgUrl (name) {
     }
 
     if (name.startsWith('/uploads')) {
-        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_ORIGIN || '';
         try {
-            const parsed = new URL(apiBaseUrl);
+            const parsed = new URL(apiBaseUrl, window.location.origin);
             return `${parsed.origin}${name}`;
         } catch {
             return name;

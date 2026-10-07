@@ -21,7 +21,20 @@ const ordersApi = createApi({
                 url: "/checkout",
                 method: "POST",
                 body: newOrder,
-            })
+            }),
+            transformResponse: (response) => response?.data || response,
+        }),
+        createZaloPayPayment: builder.mutation({
+            query: (orderId) => ({
+                url: `/${orderId}/payment/zalopay`,
+                method: "POST",
+            }),
+            transformResponse: (response) => response?.data || response,
+        }),
+        refreshZaloPayPayment: builder.query({
+            query: (orderId) => `/${orderId}/payment/zalopay`,
+            transformResponse: (response) => response?.data || response,
+            providesTags: ["Orders"],
         }),
         getOrderByEmail: builder.query({
             query: ({ page = 0, size = 10 } = {}) => `/my-orders?page=${page}&size=${size}`,
@@ -51,14 +64,26 @@ const ordersApi = createApi({
             }),
             invalidatesTags: ["Orders"],
         })
+        ,
+        cancelOrder: builder.mutation({
+            query: (orderId) => ({
+                url: `/${orderId}/cancel`,
+                method: "POST",
+            }),
+            invalidatesTags: ["Orders"],
+        }),
     })
 })
 
 export const {
     useCreateOrderMutation,
+    useCreateZaloPayPaymentMutation,
+    useRefreshZaloPayPaymentQuery,
+    useLazyRefreshZaloPayPaymentQuery,
     useGetOrderByEmailQuery,
     useGetAllOrdersQuery,
     useUpdateOrderStatusMutation,
+    useCancelOrderMutation,
 } = ordersApi;
 
 export default ordersApi;

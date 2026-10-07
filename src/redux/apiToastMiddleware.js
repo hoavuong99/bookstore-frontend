@@ -2,20 +2,20 @@ import { isFulfilled, isRejected } from "@reduxjs/toolkit";
 import { showErrorToast, showSuccessToast } from "../utils/toast";
 
 const mutationMessages = {
-  addBook: "Book created successfully.",
-  updateBook: "Book updated successfully.",
-  deleteBook: "Book deleted successfully.",
-  createCategory: "Category created successfully.",
-  updateCategory: "Category updated successfully.",
-  deleteCategory: "Category deleted successfully.",
-  updateOrderStatus: "Order status updated successfully.",
-  updateUserRole: "User role updated successfully.",
-  updateMyProfile: "Profile updated successfully.",
-  changeMyPassword: "Password changed successfully.",
-  createOrder: "Order placed successfully.",
-  addToCart: "Book added to cart.",
-  removeFromCart: "Item removed from cart.",
-  clearCart: "Cart cleared successfully.",
+  addBook: "Tạo sách thành công.",
+  updateBook: "Cập nhật sách thành công.",
+  deleteBook: "Xóa sách thành công.",
+  createCategory: "Tạo thể loại thành công.",
+  updateCategory: "Cập nhật thể loại thành công.",
+  deleteCategory: "Xóa thể loại thành công.",
+  updateOrderStatus: "Cập nhật trạng thái đơn hàng thành công.",
+  updateUserRole: "Cập nhật vai trò người dùng thành công.",
+  updateMyProfile: "Cập nhật hồ sơ thành công.",
+  changeMyPassword: "Đổi mật khẩu thành công.",
+  createOrder: "Đặt hàng thành công.",
+  addToCart: "Đã thêm sách vào giỏ hàng.",
+  removeFromCart: "Đã xóa sản phẩm khỏi giỏ hàng.",
+  clearCart: "Xóa giỏ hàng thành công.",
 };
 
 const getMutationEndpoint = (action) =>
@@ -30,7 +30,7 @@ const getErrorMessage = (action) =>
 const apiToastMiddleware = () => (next) => (action) => {
   const endpointName = getMutationEndpoint(action);
   if (endpointName && isFulfilled(action)) {
-    showSuccessToast(mutationMessages[endpointName] || "Action completed successfully.");
+    showSuccessToast(mutationMessages[endpointName] || "Thao tác thành công.");
   } else if (endpointName && isRejected(action)) {
     showErrorToast(getErrorMessage(action));
   }
