@@ -36,7 +36,7 @@ const EditorsPicks = () => {
             to={`/books/${book._id}`}
             className="mt-8 w-fit bg-amber-400 px-7 py-4 text-xs font-bold uppercase tracking-wider text-stone-950 transition hover:bg-amber-500"
           >
-            Read More
+            Xem chi tiết
           </Link>
         </div>
       </div>

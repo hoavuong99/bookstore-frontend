@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Worms - Đơn Hàng Của Tôi</title>
+  
+  <!-- Vietnamese-optimized Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400&subset=vietnamese&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --primary: #f0a85d;
+      --primary-hover: #e09447;
+      --bg-cream: #fbf5ea;
+      --text-dark: #1b1c1e;
+      --text-muted: #72757d;
+      --border-color: #edebe8;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+      --container-width: 1160px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--text-dark);
+      background-color: #fcfbf9;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .container {
+      max-width: var(--container-width);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--primary);
+      color: #1b1c1e;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      border: 1px solid var(--primary);
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--primary-hover);
+      border-color: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #d1d5db;
+      color: #374151;
+    }
+
+    .btn-outline:hover {
+      background: #111;
+      color: #fff;
+      border-color: #111;
+      transform: translateY(-1px);
+    }
+
+    /* ------------------- NAVBAR ------------------- */
+    .navbar {
+      background: #ffffff;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-logo span.icon-sq {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 28px;
+    }
+
+    .nav-links a {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #4b4f56;
+    }
+
+    /* ------------------- PAGE HERO HEADER ------------------- */
+    .page-header {
+      background-color: var(--bg-cream);
+      padding: 44px 0 28px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .page-title {
+      font-family: var(--font-serif);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #141416;
+      line-height: 1.3;
+    }
+
+    /* Search order */
+    .search-order-box {
+      position: relative;
+      width: 300px;
+    }
+
+    .search-order-box input {
+      width: 100%;
+      height: 42px;
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 2px;
+      padding: 0 14px 0 38px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .search-order-box input:focus {
+      border-color: var(--primary);
+    }
+
+    .search-order-box i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+      font-size: 0.85rem;
+    }
+
+    /* Tabs */
+    .status-tabs {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .status-tab {
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 8px 14px;
+      cursor: pointer;
+      border-radius: 20px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .status-tab:hover {
+      background: rgba(0,0,0,0.04);
+      color: #111;
+    }
+
+    .status-tab.active {
+      background: #111;
+      color: #fff;
+    }
+
+    /* ------------------- ORDERS LIST CONTAINER ------------------- */
+    .orders-wrapper {
+      padding: 40px 0 80px;
+    }
+
+    .order-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      margin-bottom: 28px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+    }
+
+    /* Order Header Bar */
+    .order-head {
+      background: #fdfbf8;
+      border-bottom: 1px solid var(--border-color);
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .order-meta-group {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .order-meta-item span {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .order-meta-item strong {
+      font-size: 0.9rem;
+      color: #1f2937;
+    }
+
+    /* Status Badges */
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+
+    .badge-delivering { background: #e0f2fe; color: #0369a1; }
+    .badge-completed { background: #dcfce7; color: #15803d; }
+    .badge-processing { background: #fef3c7; color: #b45309; }
+    .badge-cancelled { background: #fee2e2; color: #b91c1c; }
+
+    /* Timeline tracker */
+    .order-tracker {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      padding: 24px;
+      border-bottom: 1px solid var(--border-color);
+      background: #faf9f6;
+    }
+
+    .tracker-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .tracker-step::after {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: #e5e7eb;
+      z-index: 1;
+    }
+
+    .tracker-step:last-child::after {
+      display: none;
+    }
+
+    .tracker-step.completed::after {
+      background: var(--primary);
+    }
+
+    .step-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      color: #9ca3af;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .tracker-step.completed .step-icon {
+      background: var(--primary);
+      color: #111;
+    }
+
+    .tracker-step.current .step-icon {
+      background: #111;
+      color: #fff;
+      box-shadow: 0 0 0 4px rgba(240, 168, 93, 0.35);
+    }
+
+    .step-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #1f2937;
+    }
+
+    .step-time {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* Items body */
+    .order-items-body {
+      padding: 10px 24px;
+    }
+
+    .order-book-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid #f3f4f6;
+      gap: 16px;
+    }
+
+    .order-book-row:last-child {
+      border-bottom: none;
+    }
+
+    .book-detail-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .order-thumb {
+      width: 58px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 2px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      background: #eee;
+    }
+
+    .book-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 2px;
+      color: #111;
+    }
+
+    .book-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .book-price-col {
+      text-align: right;
+    }
+
+    .book-price-col strong {
+      display: block;
+      font-size: 0.95rem;
+    }
+
+    /* Card Footer Bar */
+    .order-footer {
+      background: #ffffff;
+      border-top: 1px solid var(--border-color);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .order-total-sum {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .order-total-sum strong {
+      font-size: 1.15rem;
+      color: #111;
+      margin-left: 6px;
+    }
+
+    .order-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Empty state */
+    .orders-empty {
+      text-align: center;
+      padding: 80px 20px;
+      display: none;
+    }
+
+    .orders-empty i {
+      font-size: 3rem;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    /* ------------------- FOOTER ------------------- */
+    footer {
+      background: #000000;
+      color: #a4a7ad;
+      padding: 60px 0 24px;
+      font-size: 0.85rem;
+    }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .order-tracker {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px 0;
+      }
+      .tracker-step::after {
+        display: none;
+      }
+      .order-head, .order-footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .search-order-box {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="#" class="brand-logo">
+        <span class="icon-sq"></span> Book Worms
+      </a>
+      <ul class="nav-links">
+        <li><a href="#">Trang Chủ</a></li>
+        <li><a href="#">Tất Cả Sách</a></li>
+        <li><a href="#">Sách Mới</a></li>
+        <li><a href="#">Bán Chạy</a></li>
+      </ul>
+      <div style="display: flex; gap: 18px; align-items: center;">
+        <a href="#"><i class="fa-solid fa-magnifying-glass"></i></a>
+        <a href="#"><i class="fa-solid fa-bag-shopping"></i></a>
+        <a href="#"><i class="fa-solid fa-user"></i></a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HEADER & TABS -->
+  <section class="page-header">
+    <div class="container">
+      <div class="header-top">
+        <div>
+          <h1 class="page-title">Đơn Hàng Của Tôi</h1>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Theo dõi trạng thái giao nhận và quản lý lịch sử đơn hàng của bạn.</p>
+        </div>
+        <div class="search-order-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="orderSearchInput" placeholder="Tìm theo mã đơn hoặc tên sách...">
+        </div>
+      </div>
+
+      <!-- Filter tabs -->
+      <div class="status-tabs">
+        <button class="status-tab active" data-filter="all">Tất Cả Đơn (3)</button>
+        <button class="status-tab" data-filter="delivering">Đang Giao (1)</button>
+        <button class="status-tab" data-filter="processing">Chờ Xử Lý (1)</button>
+        <button class="status-tab" data-filter="completed">Đã Giao (1)</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ORDERS LIST -->
+  <main class="container orders-wrapper">
+
+    <!-- ORDER 1: ĐANG GIAO HÀNG -->
+    <article class="order-card" data-status="delivering" data-order-id="#BW-202610-098" data-items="Into The Wild Cyber Angel">
+      <div class="order-head">
+        <div class="order-meta-group">
+          <div class="order-meta-item">
+            <span>Mã Đơn Hàng</span>
+            <strong>#BW-202610-098</strong>
+          </div>
+          <div class="order-meta-item">
+            <span>Ngày Đặt</span>
+            <strong>05/10/2026</strong>
+          </div>
+          <div class="order-meta-item">
+            <span>Phương Thức</span>
+            <strong>Thẻ Visa (...4242)</strong>
+          </div>
+        </div>
+        <div>
+          <span class="badge-status badge-delivering"><i class="fa-solid fa-truck-fast"></i> Đang Giao Hàng</span>
+        </div>
+      </div>
+
+      <!-- Stepper -->
+      <div class="order-tracker">
+        <div class="tracker-step completed">
+          <div class="step-icon"><i class="fa-solid fa-check"></i></div>
+          <span class="step-title">Đã Đặt Hàng</span>
+          <span class="step-time">05/10 - 08:30</span>
+        </div>
+        <div class="tracker-step completed">
+          <div class="step-icon"><i class="fa-solid fa-check"></i></div>
+          <span class="step-title">Đã Xác Nhận</span>
+          <span class="step-time">05/10 - 10:15</span>
+        </div>
+        <div class="tracker-step current">
+          <div class="step-icon"><i class="fa-solid fa-truck"></i></div>
+          <span class="step-title">Đang Vận Chuyển</span>
+          <span class="step-time">06/10 - 07:00</span>
+        </div>
+        <div class="tracker-step">
+          <div class="step-icon"><i class="fa-solid fa-house"></i></div>
+          <span class="step-title">Đã Nhận Hàng</span>
+          <span class="step-time">Dự kiến 08/10</span>
+        </div>
+      </div>
+
+      <!-- Items List -->
+      <div class="order-items-body">
+        <div class="order-book-row">
+          <div class="book-detail-left">
+            <img class="order-thumb" src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=300&q=80" alt="Into The Wild">
+            <div>
+              <div class="book-title">Into The Wild</div>
+              <div class="book-sub">Tác giả: Mark Brownn | Bìa Mềm</div>
+              <div class="book-sub">Số lượng: 1</div>
+            </div>
+          </div>
+          <div class="book-price-col">
+            <strong>245.000₫</strong>
+          </div>
+        </div>
+
+        <div class="order-book-row">
+          <div class="book-detail-left">
+            <img class="order-thumb" src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=300&q=80" alt="Cyber Angel">
+            <div>
+              <div class="book-title">Cyber Angel</div>
+              <div class="book-sub">Tác giả: John Roberts | Bìa Cứng</div>
+              <div class="book-sub">Số lượng: 1</div>
+            </div>
+          </div>
+          <div class="book-price-col">
+            <strong>280.000₫</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Bar -->
+      <div class="order-footer">
+        <div class="order-total-sum">
+          Tổng tiền (2 sản phẩm): <strong>525.000₫</strong>
+        </div>
+        <div class="order-actions">
+          <button class="btn btn-outline"><i class="fa-solid fa-location-dot"></i> Xem Lộ Trình</button>
+          <button class="btn"><i class="fa-solid fa-receipt"></i> Xem Chi Tiết</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- ORDER 2: CHỜ XỬ LÝ -->
+    <article class="order-card" data-status="processing" data-order-id="#BW-202610-104" data-items="Ark Forging">
+      <div class="order-head">
+        <div class="order-meta-group">
+          <div class="order-meta-item">
+            <span>Mã Đơn Hàng</span>
+            <strong>#BW-202610-104</strong>
+          </div>
+          <div class="order-meta-item">
+            <span>Ngày Đặt</span>
+            <strong>Hôm nay, 07/10/2026</strong>
+          </div>
+          <div class="order-meta-item">
+            <span>Phương Thức</span>
+            <strong>Thanh toán khi nhận hàng (COD)</strong>
+          </div>
+        </div>
+        <div>
+          <span class="badge-status badge-processing"><i class="fa-solid fa-hourglass-half"></i> Chờ Xử Lý</span>
+        </div>
+      </div>
+
+      <div class="order-items-body">
+        <div class="order-book-row">
+          <div class="book-detail-left">
+            <img class="order-thumb" src="https://images.unsplash.com/photo-1532012164546-f432f2e3777f?auto=format&fit=crop&w=300&q=80" alt="Ark Forging">
+            <div>
+              <div class="book-title">Ark Forging</div>
+              <div class="book-sub">Tác giả: John Roberts | Bìa Cứng Cao Cấp</div>
+              <div class="book-sub">Số lượng: 1</div>
+            </div>
+          </div>
+          <div class="book-price-col">
+            <strong>320.000₫</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-footer">
+        <div class="order-total-sum">
+          Tổng tiền: <strong>320.000₫</strong>
+        </div>
+        <div class="order-actions">
+          <button class="btn btn-outline" style="color: #dc2626; border-color: #fca5a5;">Hủy Đơn Hàng</button>
+          <button class="btn"><i class="fa-solid fa-receipt"></i> Xem Chi Tiết</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- ORDER 3: ĐÃ HOÀN THÀNH -->
+    <article class="order-card" data-status="completed" data-order-id="#BW-202609-041" data-items="This Dark Road to Mercy">
+      <div class="order-head">
+        <div class="order-meta-group">
+          <div class="order-meta-item">
+            <span>Mã Đơn Hàng</span>
+            <strong>#BW-202609-041</strong>
+          </div>
+          <div class="order-meta-item">
+            <span>Ngày Đặt</span>
+            <strong>28/09/2026</strong>
+          </div>
+          <div class="order-meta-item">
+            <span>Hoàn Tất Vào</span>
+            <strong>30/09/2026</strong>
+          </div>
+        </div>
+        <div>
+          <span class="badge-status badge-completed"><i class="fa-solid fa-circle-check"></i> Đã Giao Thành Công</span>
+        </div>
+      </div>
+
+      <div class="order-items-body">
+        <div class="order-book-row">
+          <div class="book-detail-left">
+            <img class="order-thumb" src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=300&q=80" alt="This Dark Road to Mercy">
+            <div>
+              <div class="book-title">This Dark Road to Mercy</div>
+              <div class="book-sub">Tác giả: Kathryn Moris | Bìa Mềm</div>
+              <div class="book-sub">Số lượng: 1</div>
+            </div>
+          </div>
+          <div class="book-price-col">
+            <strong>210.000₫</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-footer">
+        <div class="order-total-sum">
+          Tổng tiền: <strong>210.000₫</strong>
+        </div>
+        <div class="order-actions">
+          <button class="btn btn-outline"><i class="fa-solid fa-rotate-right"></i> Mua Lại</button>
+          <button class="btn"><i class="fa-regular fa-star"></i> Viết Đánh Giá</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Empty Results Placeholder -->
+    <div class="orders-empty" id="emptyState">
+      <i class="fa-solid fa-box-open"></i>
+      <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 8px;">Không tìm thấy đơn hàng</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Thử tìm kiếm với từ khóa khác hoặc chuyển sang danh mục đơn hàng khác.</p>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container footer-bottom">
+      <div>&copy; 2026 Book Worms Việt Nam. Giữ toàn bộ bản quyền.</div>
+      <div style="display: flex; gap: 20px;">
+        <a href="#">Chính Sách Giao Hàng</a>
+        <a href="#">Đổi Trả & Hoàn Tiền</a>
+        <a href="#">Trung Tâm Trợ Giúp</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- INTERACTIVE FILTER LOGIC -->
+  <script>
+    const tabs = document.querySelectorAll('.status-tab');
+    const searchInput = document.getElementById('orderSearchInput');
+    const orderCards = document.querySelectorAll('.order-card');
+    const emptyState = document.getElementById('emptyState');
+
+    let currentStatus = 'all';
+
+    function filterOrders() {
+      const query = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
+
+      orderCards.forEach(card => {
+        const cardStatus = card.getAttribute('data-status');
+        const orderId = card.getAttribute('data-order-id').toLowerCase();
+        const items = card.getAttribute('data-items').toLowerCase();
+
+        const matchesStatus = (currentStatus === 'all') || (cardStatus === currentStatus);
+        const matchesQuery = !query || orderId.includes(query) || items.includes(query);
+
+        if (matchesStatus && matchesQuery) {
+          card.style.display = 'block';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentStatus = tab.getAttribute('data-filter');
+        filterOrders();
+      });
+    });
+
+    searchInput.addEventListener('input', filterOrders);
+  </script>
+
+</body>
+</html>
