@@ -100,7 +100,7 @@ const TopSellers = () => {
               onKeyDown={(event) => {
                 if (event.key === "Enter") applyFilters();
               }}
-              placeholder="Tìm theo tên sách..."
+              placeholder="Tìm theo tên sách hoặc tác giả..."
               className="h-11 w-full border border-stone-300 bg-white pl-10 pr-3 text-sm font-normal normal-case tracking-normal outline-none transition focus:border-amber-400"
             />
           </span>

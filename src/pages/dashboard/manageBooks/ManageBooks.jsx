@@ -23,7 +23,6 @@ const emptyBook = {
   categoryIds: [],
   description: "",
   imageUrl: "",
-  rating: "",
   editorsPick: false,
 };
 
@@ -85,7 +84,6 @@ const BookFormModal = ({ book, onClose, onSaved }) => {
       categoryIds: data.categoryIds.map(Number),
       description: data.description?.trim() || "",
       imageUrl: data.imageUrl?.trim() || null,
-      rating: data.rating === "" ? null : Number(data.rating),
       editorsPick: Boolean(data.editorsPick),
     };
 
@@ -132,7 +130,6 @@ const BookFormModal = ({ book, onClose, onSaved }) => {
             ["isbn", "ISBN", "text"],
             ["price", "Giá (nghìn đồng)", "number"],
             ["stockQuantity", "Số lượng tồn kho", "number"],
-            ["rating", "Đánh giá (0-5)", "number"],
           ].map(([name, label, type]) => (
             <div key={name}>
               <label className="mb-1 block text-sm font-semibold text-gray-700" htmlFor={`book-${name}`}>
@@ -141,8 +138,8 @@ const BookFormModal = ({ book, onClose, onSaved }) => {
               <input
                 id={`book-${name}`}
                 type={type}
-                step={["price", "rating"].includes(name) ? "any" : undefined}
-                {...register(name, { required: !["authorName", "rating"].includes(name) })}
+                step={name === "price" ? "any" : undefined}
+                {...register(name, { required: name !== "authorName" })}
                 className="w-full rounded-md border p-2 focus:border-blue-300 focus:outline-none focus:ring"
               />
               {errors[name] && <p className="text-sm text-red-600">{label} là bắt buộc.</p>}

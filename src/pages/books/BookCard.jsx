@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useAddToCartMutation } from "../../redux/features/books/booksApi";
 import Swal from "sweetalert2";
-import { FaStar } from "react-icons/fa";
 import { formatVND } from "../../utils/currency";
 
 const BookCard = ({ book, compact = false, catalog = false }) => {
@@ -67,13 +66,6 @@ const BookCard = ({ book, compact = false, catalog = false }) => {
               {formatVND(book?.oldPrice)}
             </span>
           </p>
-          {(compact || catalog) && book?.rating > 0 && (
-            <div className="mb-2 flex gap-1 text-xs text-amber-500">
-              {Array.from({ length: Math.round(book.rating) }, (_, index) => (
-                <FaStar key={index} />
-              ))}
-            </div>
-          )}
           <p className={`${compact || catalog ? "hidden" : "mt-2"} text-sm text-gray-600`}>
             <strong>Tồn kho:</strong>{" "}
             <span className={book?.stockQuantity > 0 ? "text-green-600" : "text-red-600"}>

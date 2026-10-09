@@ -5,7 +5,6 @@ import {
   FaBolt,
   FaHeart,
   FaRegHeart,
-  FaRegStar,
   FaShieldAlt,
   FaShoppingBag,
   FaTruck,
@@ -58,7 +57,6 @@ const SingleBook = () => {
             coverImage: data.imageUrl || "",
             description: data.description || `ISBN: ${data.isbn || ""}`,
             authorName: data.authorName || "Chưa cập nhật tác giả",
-            rating: Number(data.rating || 0),
             editorsPick: Boolean(data.editorsPick),
             category: Array.isArray(data.categoryNames) ? data.categoryNames.join(", ") : "",
           });
@@ -126,7 +124,6 @@ const SingleBook = () => {
 
   const price = Number(book.newPrice || book.price || 0);
   const author = book.authorName || "Chưa cập nhật tác giả";
-  const rating = Number(book.rating || 0);
   const category = book.category || "Book collection";
   const stock = Number(book.stockQuantity || 0);
   const formattedDate = book.createdAt
@@ -153,7 +150,7 @@ const SingleBook = () => {
         <div className="grid items-start gap-8 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-5">
             <div className="group relative flex min-h-[30rem] items-center justify-center overflow-hidden rounded-2xl border border-stone-200 bg-amber-50/60 p-7 sm:p-9">
-              {(book.editorsPick || rating >= 4) && (
+              {book.editorsPick && (
                 <div className="absolute left-4 top-4 bg-stone-900 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-400 shadow-sm">
                   Lựa chọn biên tập
                 </div>
@@ -191,16 +188,6 @@ const SingleBook = () => {
               <p className="mt-2 text-sm font-medium text-stone-500">
                 Bởi <span className="font-semibold text-stone-900 underline decoration-amber-400 decoration-2 underline-offset-4">{author}</span>
               </p>
-              <div className="mt-4 flex flex-wrap items-center gap-3">
-                <div className="flex gap-1 text-amber-500">
-                  {Array.from({ length: 5 }, (_, index) => (
-                    index < Math.round(rating)
-                      ? <span key={index}>★</span>
-                      : <FaRegStar key={index} className="text-stone-300" />
-                  ))}
-                </div>
-                <span className="text-xs font-bold">{rating > 0 ? `${rating.toFixed(1)} / 5.0` : "Chưa có đánh giá"}</span>
-              </div>
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-stone-200 bg-white p-4">
@@ -255,7 +242,6 @@ const SingleBook = () => {
             {[
               ["synopsis", "Tóm tắt & Tổng quan"],
               ["author", `Về ${author}`],
-              ["reviews", "Đánh giá của khách hàng"],
             ].map(([id, label]) => (
               <button key={id} type="button" onClick={() => setActiveTab(id)} className={`border-b-2 pb-3 transition ${activeTab === id ? "border-amber-400 text-amber-600" : "border-transparent text-stone-500 hover:text-stone-900"}`}>
                 {label}
@@ -277,15 +263,6 @@ const SingleBook = () => {
               <h2 className="font-serif text-2xl font-bold text-stone-900">{author}</h2>
               <p>Khám phá thêm về tác giả và các tác phẩm của họ trong danh mục sách của chúng tôi.</p>
               <Link to={`/books?search=${encodeURIComponent(author)}`} className="inline-block font-semibold text-amber-600 underline underline-offset-4">Xem sách của tác giả này</Link>
-            </div>
-          )}
-          {activeTab === "reviews" && (
-            <div className="rounded-xl border border-stone-100 bg-stone-50 p-8 text-center">
-              <div className="flex justify-center gap-1 text-amber-500">
-                {Array.from({ length: 5 }, (_, index) => index < Math.round(rating) ? <span key={index}>★</span> : <FaRegStar key={index} className="text-stone-300" />)}
-              </div>
-              <h2 className="mt-3 font-serif text-2xl font-bold text-stone-900">Đánh giá của độc giả</h2>
-              <p className="mt-2 text-sm text-stone-500">{rating > 0 ? `Sách được đánh giá ${rating.toFixed(1)} trên 5.` : "Đánh giá sẽ xuất hiện khi độc giả chia sẻ cảm nhận."}</p>
             </div>
           )}
         </section>

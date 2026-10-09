@@ -20,7 +20,6 @@ const normalizeBook = (book) => ({
     coverImage: book?.imageUrl || '',
     description: book?.description || `ISBN: ${book?.isbn || ''}`,
     authorName: book?.authorName || "Chưa cập nhật tác giả",
-    rating: Number(book?.rating || 0),
     editorsPick: Boolean(book?.editorsPick),
     categoryIds: Array.isArray(book?.categoryIds) ? book.categoryIds : [],
     categoryNames: Array.isArray(book?.categoryNames) ? book.categoryNames : [],
