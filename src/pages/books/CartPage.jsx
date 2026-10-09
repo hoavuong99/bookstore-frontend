@@ -46,7 +46,7 @@ const CartPage = () => {
       <div className="mx-auto max-w-7xl">
         <div className="mb-10 flex flex-col gap-4 border-b border-stone-200 pb-7 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-600">Book Works</p>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-600">Tiệm mọt sách</p>
             <h1 className="mt-2 font-serif text-4xl font-bold text-stone-900">Giỏ hàng của bạn</h1>
             <p className="mt-2 text-sm text-stone-500">Kiểm tra sách đã chọn trước khi hoàn tất đơn hàng.</p>
           </div>
@@ -64,7 +64,7 @@ const CartPage = () => {
             </Link>
           </div>
         ) : (
-          <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+          <div className="grid min-w-0 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
             <section className="border border-stone-200 bg-white shadow-sm">
               <div className="flex items-center justify-between border-b border-stone-100 px-5 py-4 sm:px-7">
                 <h2 className="font-serif text-xl font-bold text-stone-900">Sản phẩm đã chọn</h2>

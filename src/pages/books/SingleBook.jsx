@@ -10,17 +10,22 @@ import {
   FaTruck,
 } from "react-icons/fa";
 import { HiMinus, HiPlus } from "react-icons/hi2";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useAuth } from "../../context/AuthContext";
 import {
   useAddToCartMutation,
+  useCreateReviewMutation,
+  useFetchReviewEligibilityQuery,
+  useFetchReviewsQuery,
+  useUpdateReviewMutation,
 } from "../../redux/features/books/booksApi";
 import { getImgUrl } from "../../utils/getImgUrl";
 import { formatVND } from "../../utils/currency";
 
 const SingleBook = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [book, setBook] = useState(null);
@@ -29,8 +34,17 @@ const SingleBook = () => {
   const [addToCart, { isLoading: isAdding }] = useAddToCartMutation();
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [activeTab, setActiveTab] = useState("synopsis");
+  const [activeTab, setActiveTab] = useState(
+    () => (searchParams.get("review") === "1" ? "reviews" : "synopsis")
+  );
   const [isLookInsideOpen, setIsLookInsideOpen] = useState(false);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [editingReviewId, setEditingReviewId] = useState(null);
+  const { data: reviews = [], isLoading: isLoadingReviews } = useFetchReviewsQuery(id);
+  const { data: reviewEligibility } = useFetchReviewEligibilityQuery(id, { skip: !currentUser });
+  const [createReview, { isLoading: isSubmittingReview }] = useCreateReviewMutation();
+  const [updateReview, { isLoading: isUpdatingReview }] = useUpdateReviewMutation();
 
   useEffect(() => {
     let isMounted = true;
@@ -109,6 +123,54 @@ const SingleBook = () => {
     }
   };
 
+  const submitReview = async (event) => {
+    event.preventDefault();
+    const wasEditing = Boolean(editingReviewId);
+    try {
+      if (wasEditing) {
+        await updateReview({
+          bookId: id,
+          reviewId: editingReviewId,
+          rating: reviewRating,
+          comment: reviewComment.trim(),
+        }).unwrap();
+      } else {
+        await createReview({
+          bookId: id,
+          rating: reviewRating,
+          comment: reviewComment.trim(),
+        }).unwrap();
+      }
+      setReviewComment("");
+      setEditingReviewId(null);
+      setActiveTab("reviews");
+      await Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: wasEditing ? "Đã cập nhật đánh giá" : "Đã gửi đánh giá",
+        showConfirmButton: false,
+        timer: 1600,
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Không thể gửi đánh giá",
+        text: error?.data?.message || "Vui lòng thử lại.",
+      });
+    }
+  };
+
+  const ownReview = reviews.find(
+    (review) => String(review.userId) === String(currentUser?.userId)
+  );
+
+  const startEditingReview = (review) => {
+    setEditingReviewId(review.id);
+    setReviewRating(review.rating);
+    setReviewComment(review.comment);
+    setActiveTab("reviews");
+  };
+
   if (isLoading) {
     return <div className="flex min-h-[50vh] items-center justify-center text-stone-500">Đang tải thông tin sách...</div>;
   }
@@ -126,13 +188,6 @@ const SingleBook = () => {
   const author = book.authorName || "Chưa cập nhật tác giả";
   const category = book.category || "Book collection";
   const stock = Number(book.stockQuantity || 0);
-  const formattedDate = book.createdAt
-    ? new Date(book.createdAt).toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })
-    : "Chưa cập nhật";
 
   return (
     <div className="min-h-screen bg-[#faf8f5] text-stone-900">
@@ -152,7 +207,7 @@ const SingleBook = () => {
             <div className="group relative flex min-h-[30rem] items-center justify-center overflow-hidden rounded-2xl border border-stone-200 bg-amber-50/60 p-7 sm:p-9">
               {book.editorsPick && (
                 <div className="absolute left-4 top-4 bg-stone-900 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-400 shadow-sm">
-                  Lựa chọn biên tập
+                  Đề xuất cho bạn
                 </div>
               )}
               <button
@@ -197,8 +252,6 @@ const SingleBook = () => {
               <span className="text-right text-[11px] font-medium text-stone-500">Thanh toán an toàn</span>
             </div>
 
-            <p className="text-sm leading-7 text-stone-600">{book.description}</p>
-
             <div className="space-y-3.5 pt-2">
               <div className="flex flex-col gap-3 sm:flex-row">
                 <div className="flex items-center justify-between rounded-lg border border-stone-300 bg-white px-3 py-2 sm:w-32">
@@ -222,11 +275,9 @@ const SingleBook = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 border-t border-stone-200 pt-5 text-xs sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 border-t border-stone-200 pt-5 text-xs sm:grid-cols-3">
               <Spec label="ISBN" value={book.isbn || "Chưa cập nhật"} />
-              <Spec label="Ngày phát hành" value={formattedDate} />
               <Spec label="Tồn kho" value={`${stock} sản phẩm`} />
-              <Spec label="Định dạng" value="Bìa mềm" />
             </div>
 
             <div className="grid gap-3 rounded-xl border border-stone-200 bg-amber-50/50 p-4 text-xs text-stone-500 sm:grid-cols-3">
@@ -241,7 +292,7 @@ const SingleBook = () => {
           <div className="mb-8 flex flex-wrap gap-8 border-b border-stone-200 text-sm font-bold uppercase tracking-wider">
             {[
               ["synopsis", "Tóm tắt & Tổng quan"],
-              ["author", `Về ${author}`],
+              ["reviews", `Đánh giá (${reviews.length})`],
             ].map(([id, label]) => (
               <button key={id} type="button" onClick={() => setActiveTab(id)} className={`border-b-2 pb-3 transition ${activeTab === id ? "border-amber-400 text-amber-600" : "border-transparent text-stone-500 hover:text-stone-900"}`}>
                 {label}
@@ -258,11 +309,114 @@ const SingleBook = () => {
               </div>
             </div>
           )}
-          {activeTab === "author" && (
-            <div className="space-y-3 text-sm leading-7 text-stone-600">
-              <h2 className="font-serif text-2xl font-bold text-stone-900">{author}</h2>
-              <p>Khám phá thêm về tác giả và các tác phẩm của họ trong danh mục sách của chúng tôi.</p>
-              <Link to={`/books?search=${encodeURIComponent(author)}`} className="inline-block font-semibold text-amber-600 underline underline-offset-4">Xem sách của tác giả này</Link>
+          {activeTab === "reviews" && (
+            <div className="space-y-8">
+              {currentUser && reviewEligibility?.eligible && (
+                (!reviewEligibility.reviewed || editingReviewId === ownReview?.id) && (
+                <form onSubmit={submitReview} className="rounded-xl border border-amber-200 bg-amber-50/50 p-5">
+                  <h2 className="font-serif text-2xl font-bold text-stone-900">
+                    {editingReviewId ? "Chỉnh sửa đánh giá" : "Chia sẻ cảm nhận của bạn"}
+                  </h2>
+                  <p className="mt-1 text-sm text-stone-600">Bạn chỉ có thể đánh giá sau khi đơn hàng đã giao thành công.</p>
+                  <div className="mt-4 flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => setReviewRating(value)}
+                        className={`text-2xl ${value <= reviewRating ? "text-amber-500" : "text-stone-300"}`}
+                        aria-label={`${value} sao`}
+                      >
+                        ★
+                      </button>
+                    ))}
+                  </div>
+                  <textarea
+                    value={reviewComment}
+                    onChange={(event) => setReviewComment(event.target.value)}
+                    required
+                    maxLength={2000}
+                    rows={4}
+                    placeholder="Viết nhận xét của bạn..."
+                    className="mt-4 w-full rounded-lg border border-stone-300 bg-white p-3 text-sm outline-none focus:border-amber-400"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSubmittingReview || !reviewComment.trim()}
+                    className="mt-3 rounded-lg bg-amber-400 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-stone-950 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {isSubmittingReview || isUpdatingReview
+                      ? "Đang lưu..."
+                      : editingReviewId
+                        ? "Lưu đánh giá"
+                        : "Gửi đánh giá"}
+                  </button>
+                  {editingReviewId && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingReviewId(null);
+                        setReviewRating(5);
+                        setReviewComment("");
+                      }}
+                      className="ml-3 rounded-lg border border-stone-300 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-stone-700"
+                    >
+                      Hủy
+                    </button>
+                  )}
+                </form>
+                )
+              )}
+
+              {!currentUser && (
+                <p className="rounded-lg bg-stone-50 p-4 text-sm text-stone-600">
+                  Vui lòng đăng nhập và mua sách để có thể đánh giá.
+                </p>
+              )}
+              {currentUser && reviewEligibility && !reviewEligibility.eligible && (
+                <p className="rounded-lg bg-stone-50 p-4 text-sm text-stone-600">
+                  Bạn chỉ có thể đánh giá sau khi đơn hàng chứa sách này đã giao thành công.
+                </p>
+              )}
+              {currentUser && reviewEligibility?.reviewed && !ownReview && (
+                <p className="rounded-lg bg-stone-50 p-4 text-sm text-stone-600">
+                  Bạn đã đánh giá sách này.
+                </p>
+              )}
+
+              {isLoadingReviews ? (
+                <p className="text-sm text-stone-500">Đang tải đánh giá...</p>
+              ) : reviews.length === 0 ? (
+                <p className="text-sm text-stone-500">Chưa có đánh giá nào cho sách này.</p>
+              ) : (
+                <div className="space-y-4">
+                  {reviews
+                    .filter((review) => review.id !== editingReviewId)
+                    .map((review) => (
+                      <article key={review.id} className="border-b border-stone-200 pb-4 last:border-0">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <h3 className="font-semibold text-stone-900">{review.customerName}</h3>
+                          <div className="flex items-center gap-3">
+                            <div className="text-sm text-amber-500">
+                              {"★".repeat(review.rating)}
+                              <span className="text-stone-300">{"★".repeat(5 - review.rating)}</span>
+                            </div>
+                            {currentUser && String(review.userId) === String(currentUser.userId) && (
+                              <button
+                                type="button"
+                                onClick={() => startEditingReview(review)}
+                                className="text-xs font-semibold text-amber-700 underline underline-offset-2"
+                              >
+                                Sửa
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <p className="mt-2 text-sm leading-6 text-stone-600">{review.comment}</p>
+                      </article>
+                    ))}
+                </div>
+              )}
             </div>
           )}
         </section>

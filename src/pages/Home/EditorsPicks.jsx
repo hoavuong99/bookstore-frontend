@@ -28,7 +28,7 @@ const EditorsPicks = () => {
           </div>
         </div>
         <div className="flex flex-col justify-center px-8 py-14 md:px-20">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-stone-500">Lựa chọn biên tập</p>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-stone-500">Đề xuất của tiệm</p>
           <h2 className="font-serif text-4xl font-bold text-stone-900 md:text-5xl">{book.title}</h2>
           <p className="mt-3 font-semibold text-stone-700">{book.authorName}</p>
           <p className="mt-6 max-w-md leading-7 text-stone-600">{book.description}</p>

@@ -36,13 +36,13 @@ const Navbar = () => {
             <span className="flex size-9 items-center justify-center rounded-sm bg-amber-400 text-stone-900">
               <HiOutlineBookOpen className="size-5" />
             </span>
-            <span>Book Works</span>
+            <span>TIỆM MỌT SÁCH</span>
           </Link>
           <div className="hidden items-center gap-7 text-sm font-semibold uppercase tracking-wide text-stone-800 lg:flex">
             <Link to="/books" className="hover:text-amber-600">Tất cả sách</Link>
             <a href="/#new-arrivals" className="hover:text-amber-600">Sách mới</a>
             <a href="/#best-sellers" className="hover:text-amber-600">Bán chạy</a>
-            <a href="/#editors-picks" className="hover:text-amber-600">Lựa chọn biên tập</a>
+            <a href="/#editors-picks" className="hover:text-amber-600">Đề xuất của tiệm</a>
             <a href="/#categories" className="hover:text-amber-600">Thể loại</a>
           </div>
         </div>

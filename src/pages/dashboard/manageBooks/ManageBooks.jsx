@@ -147,7 +147,7 @@ const BookFormModal = ({ book, onClose, onSaved }) => {
           ))}
           <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
             <input type="checkbox" {...register("editorsPick")} />
-            Lựa chọn biên tập
+            Đề xuất cho bạn
           </label>
 
           <div>
@@ -270,7 +270,7 @@ const ManageBooks = () => {
 
   return (
     <section className="dashboard-table-section">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <button onClick={() => { setMessage(""); setErrorMessage(""); setIsAdding(true); }} className="rounded-md bg-purple-600 px-4 py-2 font-semibold text-white hover:bg-purple-700">
           Thêm sách mới
         </button>

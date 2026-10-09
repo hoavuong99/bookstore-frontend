@@ -103,7 +103,7 @@ const CheckoutPage = () => {
           <div className="mb-6 flex items-center justify-between">
             <Link to="/" className="text-xl font-extrabold tracking-tight text-stone-950">
               <span className="mr-2 inline-block size-4 rounded-sm bg-amber-400" />
-              Book Works
+              Tiệm mọt sách
             </Link>
             <div className="hidden items-center gap-4 text-xs font-bold uppercase tracking-wider md:flex">
               <span className="flex items-center gap-2 text-stone-900">✓ Giỏ hàng</span>
@@ -135,7 +135,7 @@ const CheckoutPage = () => {
             </Link>
           </div>
         ) : (
-          <div className="grid items-start gap-8 lg:grid-cols-12">
+          <div className="grid min-w-0 items-start gap-8 lg:grid-cols-12">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 lg:col-span-7">
               <section className="rounded-xl border border-stone-200/80 bg-white p-6 shadow-sm sm:p-7">
                 <SectionHeading number="1" title="Thông tin giao hàng" />

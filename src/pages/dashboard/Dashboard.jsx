@@ -1,13 +1,48 @@
-import { MdInventory2, MdLocalShipping, MdPeople, MdTrendingUp } from "react-icons/md";
+import { MdInventory2, MdPeople, MdTrendingUp } from "react-icons/md";
 import Loading from "../../components/Loading";
 import { useFetchAllBooksQuery } from "../../redux/features/books/booksApi";
 import { useGetDashboardSummaryQuery } from "../../redux/features/dashboard/dashboardApi";
 import RevenueChart from "./RevenueChart";
 import { formatVND } from "../../utils/currency";
+import { useEffect, useState } from "react";
+
+const toInputDate = (date) => {
+  const offset = date.getTimezoneOffset();
+  return new Date(date.getTime() - offset * 60000).toISOString().slice(0, 10);
+};
+
+const getDefaultRange = (period) => {
+  const today = new Date();
+  const to = toInputDate(today);
+  const fromDate = new Date(today);
+  if (period === "day") fromDate.setDate(fromDate.getDate() - 2);
+  if (period === "month") {
+    fromDate.setDate(1);
+    fromDate.setMonth(fromDate.getMonth() - 2);
+  }
+  if (period === "year") {
+    fromDate.setMonth(0, 1);
+    fromDate.setFullYear(fromDate.getFullYear() - 2);
+  }
+  return { from: toInputDate(fromDate), to };
+};
 
 const Dashboard = () => {
+  const [period, setPeriod] = useState("month");
+  const [range, setRange] = useState(() => getDefaultRange("month"));
+  const [appliedFilters, setAppliedFilters] = useState(() => ({
+    period: "month",
+    ...getDefaultRange("month"),
+  }));
+  useEffect(() => {
+    setRange(getDefaultRange(period));
+  }, [period]);
   const { data: summary, isLoading: isLoadingSummary, isError } =
-    useGetDashboardSummaryQuery();
+    useGetDashboardSummaryQuery({
+      period: appliedFilters.period,
+      from: appliedFilters.from,
+      to: appliedFilters.to,
+    });
   const { data: books = [], isLoading: isLoadingBooks } = useFetchAllBooksQuery();
 
   if (isLoadingSummary || isLoadingBooks) return <Loading />;
@@ -21,12 +56,11 @@ const Dashboard = () => {
 
   return (
     <section className="space-y-6">
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {[
           ["Tổng doanh thu", formatVND(totalRevenue), "text-green-600", "bg-green-100", MdTrendingUp],
           ["Tổng tồn kho", summary?.totalStockQuantity || 0, "text-blue-600", "bg-blue-100", MdInventory2],
           ["Số đầu sách", summary?.totalBooks || books.length, "text-purple-600", "bg-purple-100", MdPeople],
-          ["Sách bán chạy", bestSellers.length, "text-yellow-600", "bg-yellow-100", MdLocalShipping],
         ].map(([label, value, textColor, backgroundColor, Icon]) => (
           <div key={label} className="flex items-center rounded-lg bg-white p-6 shadow">
             <div className={`mr-4 inline-flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full ${textColor} ${backgroundColor}`}>
@@ -74,10 +108,16 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="rounded-lg bg-white p-6 shadow">
-        <h2 className="mb-4 text-xl font-semibold">Doanh thu</h2>
-        <RevenueChart totalRevenue={Number(summary?.totalRevenue || 0)} />
-      </div>
+      <RevenueChart
+        totalRevenue={Number(summary?.totalRevenue || 0)}
+        revenuePoints={summary?.revenuePoints || []}
+        period={period}
+        from={range.from}
+        to={range.to}
+        onPeriodChange={setPeriod}
+        onRangeChange={setRange}
+        onApplyFilters={() => setAppliedFilters({ period, ...range })}
+      />
     </section>
   );
 };

@@ -41,13 +41,14 @@ const DashboardLayout = () => {
   };
 
   return (
-    <section className="flex md:bg-gray-100 min-h-screen overflow-hidden">
-      <aside className="hidden sm:flex sm:w-64 sm:flex-col">
+    <section className="flex min-h-screen w-full overflow-x-hidden md:bg-gray-100">
+      <aside className="hidden shrink-0 sm:flex sm:w-56 sm:flex-col lg:w-64">
         <a
           href="/"
           className="inline-flex h-20 items-center justify-center bg-purple-600 px-6 hover:bg-purple-500 focus:bg-purple-500"
         >
           <img src="/fav-icon.png" alt="" />
+          <h1 className="ml-3 text-2xl font-bold text-white">Tiệm mọt sách</h1>
         </a>
         <div className="flex-grow flex flex-col justify-between text-gray-500 bg-gray-800">
           <nav className="mx-4 my-6 flex flex-col space-y-3">
@@ -152,8 +153,8 @@ const DashboardLayout = () => {
           </div>
         </div>
       </aside>
-      <div className="flex-grow text-gray-800">
-        <header className="relative flex items-center h-20 px-6 sm:px-10 bg-white">
+      <div className="min-w-0 flex-1 text-gray-800">
+        <header className="relative flex min-h-20 flex-wrap items-center gap-2 bg-white px-3 py-3 sm:px-10">
           <button className="block sm:hidden relative flex-shrink-0 p-2 mr-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 focus:bg-gray-100 focus:text-gray-800 rounded-full">
             <span className="sr-only">Menu</span>
             <svg
@@ -171,7 +172,7 @@ const DashboardLayout = () => {
               />
             </svg>
           </button>
-          <div className="flex flex-shrink-0 items-center ml-auto">
+          <div className="ml-auto flex min-w-0 shrink-0 items-center">
             <details className="relative">
               <summary className="inline-flex cursor-pointer list-none items-center rounded-lg p-2 hover:bg-gray-100 focus:bg-gray-100">
               <span className="sr-only">Menu người dùng</span>
@@ -220,10 +221,10 @@ const DashboardLayout = () => {
             </details>
           </div>
         </header>
-        <main className="p-6 sm:p-10 space-y-6 ">
-          <div className="flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between">
-            <div className="mr-6">
-              <h1 className="text-4xl font-semibold mb-2">{pageTitle}</h1>
+        <main className="min-w-0 space-y-6 p-4 sm:p-10">
+          <div className="flex flex-col justify-between gap-4 md:flex-row">
+            <div className="min-w-0">
+              <h1 className="mb-2 text-3xl font-semibold sm:text-4xl">{pageTitle}</h1>
             </div>
           </div>
           <Outlet />

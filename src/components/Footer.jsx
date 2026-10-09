@@ -21,7 +21,7 @@ const Footer = () => {
               <span className="flex size-8 items-center justify-center bg-amber-400 text-stone-950">
                 <HiOutlineBookOpen className="size-5" />
               </span>
-              Book Works
+              Tiệm mọt sách
             </Link>
             <p className="mt-5 max-w-64 leading-6">
               Điểm đến yêu thích cho sách, cộng đồng đọc và những khám phá văn học.
@@ -38,7 +38,7 @@ const Footer = () => {
           <FooterColumn title="Khám phá">
             <a href="/#new-arrivals">Sách mới</a>
             <a href="/#best-sellers">Sách bán chạy</a>
-            <a href="/#editors-picks">Lựa chọn biên tập</a>
+            <a href="/#editors-picks">Đề xuất của tiệm</a>
             <Link to="/books">Xem danh mục</Link>
           </FooterColumn>
 
@@ -51,7 +51,7 @@ const Footer = () => {
         </div>
 
         <div className="flex flex-col gap-7 pt-8 text-xs sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Book Works. Bảo lưu mọi quyền.</p>
+          <p>© {new Date().getFullYear()} Tiệm mọt sách</p>
           <div className="flex items-center gap-3 text-xl text-white" aria-label="Accepted payment methods">
             <FaCcMastercard aria-label="Mastercard" />
             <FaCcVisa aria-label="Visa" />

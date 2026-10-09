@@ -13,7 +13,10 @@ const dashboardApi = createApi({
   tagTypes: ["Dashboard"],
   endpoints: (builder) => ({
     getDashboardSummary: builder.query({
-      query: () => "/dashboard/summary",
+      query: ({ period = "month", from, to } = {}) => ({
+        url: "/dashboard/summary",
+        params: { period, from, to },
+      }),
       transformResponse: (response) => response?.data || response,
       providesTags: ["Dashboard"],
     }),

@@ -47,7 +47,7 @@ const unwrapApiResponse = (response) => {
 const booksApi = createApi({
     reducerPath: 'booksApi',
     baseQuery,
-    tagTypes: ['Books', 'Categories', 'Cart'],
+    tagTypes: ['Books', 'Categories', 'Cart', 'Reviews'],
     endpoints: (builder) =>({
         fetchAllCategories: builder.query({
             query: () => "/categories",
@@ -130,6 +130,38 @@ const booksApi = createApi({
             transformResponse: (response) => normalizeBook(unwrapApiResponse(response)),
             providesTags: (result, error, id) => [{ type: "Books", id }],
         }),
+        fetchReviews: builder.query({
+            query: (bookId) => `/books/${bookId}/reviews`,
+            transformResponse: unwrapApiResponse,
+            providesTags: (result, error, bookId) => [{ type: "Reviews", id: bookId }],
+        }),
+        fetchReviewEligibility: builder.query({
+            query: (bookId) => `/books/${bookId}/reviews/eligibility`,
+            transformResponse: unwrapApiResponse,
+            providesTags: (result, error, bookId) => [{ type: "Reviews", id: `eligibility-${bookId}` }],
+        }),
+        createReview: builder.mutation({
+            query: ({ bookId, rating, comment }) => ({
+                url: `/books/${bookId}/reviews`,
+                method: "POST",
+                body: { rating, comment },
+            }),
+            invalidatesTags: (result, error, { bookId }) => [
+                { type: "Reviews", id: bookId },
+                { type: "Reviews", id: `eligibility-${bookId}` },
+            ],
+        }),
+        updateReview: builder.mutation({
+            query: ({ bookId, reviewId, rating, comment }) => ({
+                url: `/books/${bookId}/reviews/${reviewId}`,
+                method: "PUT",
+                body: { rating, comment },
+            }),
+            invalidatesTags: (result, error, { bookId }) => [
+                { type: "Reviews", id: bookId },
+                { type: "Reviews", id: `eligibility-${bookId}` },
+            ],
+        }),
         addBook: builder.mutation({
             query: (newBook) => ({
                 url: `/books`,
@@ -198,6 +230,10 @@ export const {
     useFetchNewArrivalsQuery,
     useFetchEditorsPicksQuery,
     useFetchBookByIdQuery,
+    useFetchReviewsQuery,
+    useFetchReviewEligibilityQuery,
+    useCreateReviewMutation,
+    useUpdateReviewMutation,
     useAddBookMutation,
     useUpdateBookMutation,
     useDeleteBookMutation,

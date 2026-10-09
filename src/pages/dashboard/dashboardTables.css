@@ -2,6 +2,7 @@
   width: 100%;
   max-width: 1600px;
   margin-inline: auto;
+  min-width: 0;
 }
 
 .dashboard-table-wrapper {
@@ -18,6 +19,17 @@
   text-align: left;
   font-size: 1rem;
   line-height: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .dashboard-table-wrapper {
+    max-width: calc(100vw - 2rem);
+  }
+
+  .dashboard-table th,
+  .dashboard-table td {
+    padding: 0.875rem 1rem;
+  }
 }
 
 .dashboard-table thead {

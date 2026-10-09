@@ -3,9 +3,11 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
   const [message, setMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const { loginUser } = useAuth();
   const navigate = useNavigate();
   const {
@@ -54,14 +56,19 @@ const Login = () => {
             >
               Mật khẩu
             </label>
-            <input
-              {...register("password", { required: true })}
-              type="password"
-              name="password"
-              id="password"
-              placeholder="Mật khẩu"
-              className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow"
-            />
+            <div className="relative">
+              <input
+                {...register("password", { required: true })}
+                type={showPassword ? "text" : "password"}
+                name="password"
+                id="password"
+                placeholder="Mật khẩu"
+                className="shadow appearance-none border rounded w-full py-2 pl-3 pr-10 leading-tight focus:outline-none focus:shadow"
+              />
+              <button type="button" onClick={() => setShowPassword((visible) => !visible)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}>
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
           {message && (
             <p className="text-red-500 text-xs italic mb-3">{message}</p>

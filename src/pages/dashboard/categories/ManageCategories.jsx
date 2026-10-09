@@ -114,7 +114,7 @@ const ManageCategories = () => {
 
   return (
     <section className="dashboard-table-section">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <button onClick={() => { setMessage(""); setErrorMessage(""); setIsAdding(true); }} className="rounded-md bg-purple-600 px-4 py-2 font-semibold text-white hover:bg-purple-700">Thêm thể loại mới</button>
       </div>
       {message && <p className="mb-4 text-sm text-green-700">{message}</p>}

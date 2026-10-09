@@ -5,9 +5,11 @@ import { useForm } from "react-hook-form"
 import axios from "axios"
 import getBaseUrl from '../utils/baseURL'
 import { useNavigate } from 'react-router-dom'
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const AdminLogin = () => {
     const [message, setMessage] = useState("")
+    const [showPassword, setShowPassword] = useState(false)
     const {
         register,
         handleSubmit,
@@ -57,11 +59,16 @@ const AdminLogin = () => {
                 </div>
                 <div className='mb-4'>
                     <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor="password">Mật khẩu</label>
-                    <input 
-                    {...register("password", { required: true })} 
-                    type="password" name="password" id="password" placeholder='Mật khẩu'
-                    className='shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow'
+                    <div className="relative">
+                    <input
+                    {...register("password", { required: true })}
+                    type={showPassword ? "text" : "password"} name="password" id="password" placeholder='Mật khẩu'
+                    className='shadow appearance-none border rounded w-full py-2 pl-3 pr-10 leading-tight focus:outline-none focus:shadow'
                     />
+                    <button type="button" onClick={() => setShowPassword((visible) => !visible)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}>
+                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                    </div>
                 </div>
                 {
                     message && <p className='text-red-500 text-xs italic mb-3'>{message}</p>

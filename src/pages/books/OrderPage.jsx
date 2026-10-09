@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { MdCheck, MdSearch, MdShoppingBag } from "react-icons/md";
+import { MdCheck, MdRateReview, MdSearch, MdShoppingBag } from "react-icons/md";
+import { Link } from "react-router-dom";
 import {
   useGetOrderByEmailQuery,
   useCancelOrderMutation,
@@ -84,7 +85,7 @@ const OrderPage = () => {
   return (
     <main className="min-h-screen bg-[#fcfbf9] text-[#1b1c1e]">
       <section className="border-b border-[#edebe8] bg-[#fbf5ea] py-10">
-        <div className="mx-auto max-w-[1160px] px-6">
+        <div className="mx-auto max-w-[1160px] px-4 sm:px-6">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-[#72757d]">
@@ -123,7 +124,7 @@ const OrderPage = () => {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1160px] px-6 py-10">
+      <section className="mx-auto max-w-[1160px] px-4 py-8 sm:px-6 sm:py-10">
         {visibleOrders.length === 0 ? (
           <div className="border border-[#edebe8] bg-white px-6 py-20 text-center shadow-sm">
             <MdShoppingBag className="mx-auto mb-4 text-5xl text-[#f0a85d]" />
@@ -186,8 +187,8 @@ const OrderPage = () => {
                     </h3>
                     <div className="space-y-4">
                     {order.items.map((item) => (
-                      <div key={item.bookId} className="flex items-center justify-between gap-4 border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
-                        <div className="flex min-w-0 items-center gap-4">
+                      <div key={item.bookId} className="flex flex-wrap items-center gap-4 border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
+                        <div className="flex min-w-0 flex-1 items-center gap-4">
                           <img
                             src={item.imageUrl ? getImgUrl(item.imageUrl) : fallbackBookCover}
                             alt={item.bookTitle}
@@ -203,9 +204,21 @@ const OrderPage = () => {
                             </p>
                           </div>
                         </div>
-                        <strong className="shrink-0 text-sm text-gray-900">
-                          {formatVND(Number(item.price || 0) * Number(item.quantity || 0))}
-                        </strong>
+                        <div className="ml-auto flex shrink-0 items-center gap-3 sm:gap-4">
+                          <strong className="text-sm text-gray-900">
+                            {formatVND(Number(item.price || 0) * Number(item.quantity || 0))}
+                          </strong>
+                          {order.orderStatus === "DELIVERED" && (
+                            <Link
+                              to={`/books/${item.bookId}?review=1`}
+                              title="Đánh giá sách"
+                              aria-label={`Đánh giá sách ${item.bookTitle}`}
+                              className="flex size-9 items-center justify-center rounded-full border border-amber-300 text-amber-600 transition hover:bg-amber-50"
+                            >
+                              <MdRateReview className="text-xl" />
+                            </Link>
+                          )}
+                        </div>
                       </div>
                     ))}
                     </div>
