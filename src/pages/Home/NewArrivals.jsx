@@ -10,7 +10,7 @@ const NewArrivals = () => {
       <div className="mb-10 text-center">
         <h2 className="font-serif text-4xl font-bold text-stone-900">Khám phá sách mới</h2>
         <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-stone-600">
-          Fresh titles added to the bookstore, ready for your next reading adventure.
+          Cập nhật những cuốn sách mới nhất từ các tác giả nổi tiếng và những câu chuyện hấp dẫn. Hãy khám phá và tìm cho mình những trải nghiệm đọc tuyệt vời.
         </p>
       </div>
       {isLoading && <p className="text-stone-600">Đang tải sách mới...</p>}
